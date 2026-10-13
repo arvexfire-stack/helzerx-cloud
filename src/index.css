@@ -289,3 +289,31 @@
  .benefit-card p{font-size:9px;line-height:1.55}
 }
 @media(prefers-reduced-motion:reduce){.benefit-card,.benefit-icon,.benefit-card>a{transition:none!important}.benefit-card.reveal-ready{opacity:1;transform:none}}
+
+/* HelzerX Cloud signature cards — light lavender brand palette, dimensional glass and restrained 3D motion. */
+.benefits-section{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(180deg,#fbfaff 0%,#f7f6ff 54%,#fcfbff 100%)}
+.benefits-section:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 22%,rgba(197,187,255,.18),transparent 55%),radial-gradient(ellipse at 8% 78%,rgba(169,231,255,.12),transparent 38%),radial-gradient(ellipse at 95% 72%,rgba(232,190,255,.12),transparent 40%)}
+.benefits-section .section-title{position:relative;z-index:1;text-align:center;margin:0 auto 38px;max-width:640px}
+.benefits-section .section-title h2{font-size:clamp(31px,3.6vw,43px);line-height:1.08;letter-spacing:-1.8px;color:#302d40}
+.benefit-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,22px);align-items:stretch;perspective:1800px}
+.benefit-card{--tilt-x:0deg;--tilt-y:0deg;--shine-x:50%;--shine-y:25%;position:relative;isolation:isolate;overflow:hidden;min-height:245px;padding:29px 22px 26px;display:flex;flex-direction:column;align-items:center;text-align:center;border:1px solid rgba(255,255,255,.96);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(250,249,255,.78) 50%,rgba(241,241,255,.78));box-shadow:inset 0 1.5px 0 rgba(255,255,255,1),inset 0 -1px 0 rgba(151,141,210,.08),0 12px 28px rgba(76,66,139,.055),0 2px 5px rgba(76,66,139,.025);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transform:perspective(1100px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateZ(0);transform-style:preserve-3d;will-change:transform;transition:transform .6s cubic-bezier(.2,.75,.25,1),box-shadow .6s,border-color .45s}
+.benefit-card:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:inherit;background:radial-gradient(250px circle at var(--shine-x) var(--shine-y),rgba(255,255,255,.98),transparent 66%),radial-gradient(ellipse at 12% 0%,rgba(182,168,255,.2),transparent 52%),linear-gradient(135deg,rgba(255,255,255,.5),transparent 40%,rgba(180,229,255,.18));opacity:.92}
+.benefit-card:after{content:"";position:absolute;inset:1px;z-index:0;pointer-events:none;border-radius:17px;border:1px solid rgba(255,255,255,.9);box-shadow:inset 0 0 22px rgba(255,255,255,.24);opacity:.9}
+.benefit-card>*{position:relative;z-index:1}
+.benefit-card.reveal-ready{opacity:0;transform:perspective(1100px) translate3d(0,32px,-24px) rotateX(7deg) scale(.97);transition:opacity .85s cubic-bezier(.2,.7,.2,1),transform .95s cubic-bezier(.2,.7,.2,1),box-shadow .6s,border-color .45s}
+.benefit-card.reveal-ready.reveal-in{opacity:1;transform:perspective(1100px) translate3d(0,0,0) rotateX(0) rotateY(0) scale(1)}
+.benefit-card:nth-child(1){--card-delay:0ms}.benefit-card:nth-child(2){--card-delay:130ms}.benefit-card:nth-child(3){--card-delay:260ms}
+.benefit-card.reveal-ready{transition-delay:var(--card-delay,0ms),var(--card-delay,0ms),0ms,0ms}
+.benefit-icon{width:62px;height:62px;flex:0 0 62px;display:grid;place-items:center;margin:3px auto 21px;border-radius:18px;color:#7469c7;border:1px solid rgba(255,255,255,.98);background:linear-gradient(145deg,#fff 0%,#f2f0ff 48%,#e5f7ff 100%);box-shadow:0 10px 23px rgba(116,101,204,.13),0 3px 7px rgba(93,83,157,.06),inset 0 1px 0 #fff,inset 0 -4px 10px rgba(172,176,255,.12);transform:translate3d(0,0,32px);transition:transform .58s cubic-bezier(.2,.75,.25,1),box-shadow .58s}
+.benefit-icon svg{width:24px;height:24px;filter:drop-shadow(0 1px 1px rgba(72,63,123,.12))}
+.benefit-card h3{font-size:15px;line-height:1.38;letter-spacing:-.35px;font-weight:600;color:#39354b;margin:0 0 10px;transform:translateZ(22px)}
+.benefit-card p{font-size:11px;line-height:1.8;max-width:255px;margin:0 auto;color:#858198;transform:translateZ(14px)}
+.benefit-number{position:absolute;right:17px;top:16px;font-size:7px;letter-spacing:1.2px;color:#aaa5c2;transform:translateZ(12px)}
+.benefit-card>a{position:absolute;right:16px;bottom:15px;width:25px;height:25px;display:grid;place-items:center;border:1px solid rgba(151,139,238,.2);border-radius:50%;color:#8276d7;background:rgba(255,255,255,.7);box-shadow:0 3px 9px rgba(76,65,143,.055);transform:translate3d(0,0,18px);opacity:.75;transition:transform .42s,opacity .42s,background .35s,color .35s,box-shadow .35s}
+.benefit-card:hover{border-color:rgba(173,161,242,.72);box-shadow:0 27px 55px rgba(76,65,139,.13),0 8px 18px rgba(116,101,204,.08),inset 0 1.5px 0 #fff}
+.benefit-card:hover .benefit-icon{transform:translate3d(0,-5px,44px) rotate(-3deg);box-shadow:0 16px 30px rgba(116,101,204,.2),0 4px 10px rgba(93,83,157,.08),inset 0 1px 0 #fff}
+.benefit-card:hover>a{opacity:1;transform:translate3d(2px,-3px,27px);background:#7770e9;color:#fff;box-shadow:0 7px 16px rgba(98,84,211,.2)}
+@media(min-width:1000px){.benefit-card{min-height:260px;padding:32px 26px 27px}.benefits-section{padding-top:84px;padding-bottom:78px}}
+@media(max-width:760px){.benefits-section .section-title{margin-bottom:28px}.benefit-grid{gap:10px}.benefit-card{min-height:220px;padding:22px 10px 25px;border-radius:15px}.benefit-icon{width:50px;height:50px;flex-basis:50px;border-radius:15px;margin:3px auto 17px}.benefit-icon svg{width:21px;height:21px}.benefit-card h3{font-size:12px;letter-spacing:-.2px;margin-bottom:8px}.benefit-card p{font-size:10px;line-height:1.65}.benefit-number{right:9px;top:9px;font-size:6px}.benefit-card>a{opacity:1;right:9px;bottom:9px;width:21px;height:21px}}
+@media(max-width:420px){.benefits-section .section-title h2{font-size:30px}.benefit-grid{gap:7px}.benefit-card{min-height:205px;padding:18px 7px 22px;border-radius:12px}.benefit-icon{width:43px;height:43px;flex-basis:43px;border-radius:13px;margin-bottom:14px}.benefit-icon svg{width:18px;height:18px}.benefit-card h3{font-size:10px;letter-spacing:-.2px}.benefit-card p{font-size:9px;line-height:1.55}}
+@media(prefers-reduced-motion:reduce){.benefit-card,.benefit-icon,.benefit-card>a{transition:none!important}.benefit-card.reveal-ready{opacity:1;transform:none}}
