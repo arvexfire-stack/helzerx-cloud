@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUpRight, Check, ChevronDown, Menu, Plus, Sparkles, Zap, ShieldCheck, Layers3, Code2, Workflow, Search } from 'lucide-react';
 const RibbonScene = lazy(() => import('./ServerScene.jsx'));
 function SceneLoader(){return <div className="scene-loading" aria-hidden="true"/>;}
-function LazyScene(){return <Suspense fallback={<SceneLoader/>}><LazyScene/></Suspense>;}
+function LazyScene(){return <Suspense fallback={<SceneLoader/>}><RibbonScene/></Suspense>;}
 
 const benefits = [
   { icon: Zap, title: 'Fast Cloud Compute', text: 'Launch websites, APIs, and workloads on infrastructure built to keep your projects moving.' },
