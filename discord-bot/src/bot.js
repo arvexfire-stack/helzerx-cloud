@@ -113,7 +113,7 @@ client.on('interactionCreate', async interaction => {
           });
           await apiPost('/api/v1/internal/discord/ticket-channel', { orderId: item.orderId, guildId, channelId: channel.id });
         } catch (error) {
-          console.error(JSON.stringify({ event: 'ticket_recovery_failed', orderReference: item.reference, errorName: error.name }));
+          console.error(JSON.stringify({ event: 'ticket_recovery_failed', orderReference: item.reference, errorName: error.name, errorCode: error.code ?? null, errorMessage: error.message ?? null, discordCode: error.rawError?.code ?? null, discordMessage: error.rawError?.message ?? null, method: error.method ?? error.request?.method ?? null, url: error.url ?? error.request?.url ?? null }));
           await interaction.editReply({ content: `A recovery channel was created but could not be linked. Keep it private and contact the system administrator. Reference: ${item.reference}` });
           return;
         }
@@ -227,7 +227,7 @@ client.on('interactionCreate', async interaction => {
     });
     await interaction.editReply({ content: `Your private order ticket is ready: ${channel}` });
   } catch (error) {
-    console.error(JSON.stringify({ event: 'ticket_creation_failed', orderId: order.id, errorName: error.name }));
+    console.error(JSON.stringify({ event: 'ticket_creation_failed', orderId: order.id, orderReference: order.reference, errorName: error.name, errorCode: error.code ?? null, errorMessage: error.message ?? null, discordCode: error.rawError?.code ?? null, discordMessage: error.rawError?.message ?? null, method: error.method ?? error.request?.method ?? null, url: error.url ?? error.request?.url ?? null }));
     if (channel) {
       try { await channel.send('Ticket setup is incomplete. Please wait for staff; do not submit your claim code again.'); } catch {}
     }
