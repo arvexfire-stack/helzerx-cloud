@@ -359,3 +359,20 @@
 .home-pricing-footer .primary-action{white-space:nowrap}
 @media(max-width:900px){.home-vps-plan-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-vps-pricing .pricing-title{gap:24px}}
 @media(max-width:650px){.home-vps-plan-grid{grid-template-columns:1fr;gap:13px}.home-vps-plan-card{padding:24px 22px 20px}.home-pricing-footer{align-items:flex-start;flex-direction:column}.home-pricing-footer .primary-action{margin-top:2px}.home-vps-pricing .pricing-title{display:block}.home-pricing-intro{margin-top:18px}}
+
+
+/* Three homepage plan cards with a visibly elevated centre recommendation. */
+.home-vps-three-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.12fr) minmax(0,1fr);align-items:center;gap:20px;padding:16px 0 20px}
+.home-vps-three-grid .home-vps-plan-card{height:100%;min-height:395px}
+.home-vps-three-grid .home-vps-popular{z-index:2;min-height:435px;padding:32px 25px 25px;border:1.5px solid #a49aff;border-radius:18px;background:radial-gradient(ellipse at 50% 0,rgba(143,130,255,.17),transparent 55%),linear-gradient(150deg,#fff 0%,#f7f5ff 58%,#eef0ff 100%);box-shadow:0 24px 65px rgba(104,89,220,.19),0 0 0 5px rgba(140,126,255,.07),inset 0 1px 0 #fff;transform:scale(1.045)}
+.home-vps-three-grid .home-vps-popular .plan-index{color:#786be6;font-weight:700;letter-spacing:1.4px}
+.home-vps-three-grid .home-vps-popular .plan-ribbon{top:-13px;right:auto;left:50%;transform:translateX(-50%);white-space:nowrap;padding:7px 14px;border:1px solid rgba(255,255,255,.8);border-radius:999px;background:linear-gradient(110deg,#7668ed,#9b85ff);color:white;font-size:8px;letter-spacing:1.1px;box-shadow:0 7px 20px rgba(118,104,237,.3)}
+.home-vps-three-grid .home-vps-popular h3{font-size:16px;color:#37304f}
+.home-vps-three-grid .home-vps-popular .plan-price strong{font-size:40px;color:#31284f}
+.home-vps-three-grid .home-vps-popular .plan-separator{background:#ded9ff}
+.home-vps-three-grid .home-vps-popular li{font-size:10px}
+.home-vps-three-grid .home-vps-popular .plan-button.filled{justify-content:center;gap:10px;border-color:#7668ed;background:linear-gradient(110deg,#7062e8,#8e78f5);box-shadow:0 8px 18px rgba(118,104,237,.2)}
+.home-vps-three-grid .home-vps-plan-card:not(.home-vps-popular){transform:translateY(0);transition:transform .3s,box-shadow .3s}
+.home-vps-three-grid .home-vps-plan-card:not(.home-vps-popular):hover{transform:translateY(-5px)}
+@media(max-width:900px){.home-vps-three-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.home-vps-three-grid .home-vps-plan-card{padding:23px 16px 18px;min-height:405px}.home-vps-three-grid .home-vps-popular{min-height:435px;padding:28px 16px 20px;transform:scale(1.025)}.home-vps-three-grid .home-vps-plan-card h3{font-size:12px}.home-vps-three-grid .home-vps-plan-card .plan-price strong{font-size:29px}}
+@media(max-width:650px){.home-vps-three-grid{grid-template-columns:1fr;gap:18px;padding:12px 0}.home-vps-three-grid .home-vps-plan-card,.home-vps-three-grid .home-vps-popular{min-height:0;height:auto;padding:25px 22px 21px;transform:none}.home-vps-three-grid .home-vps-popular{margin:5px 0;border-radius:16px}.home-vps-three-grid .home-vps-plan-card h3{font-size:14px}.home-vps-three-grid .home-vps-plan-card .plan-price strong{font-size:34px}}
