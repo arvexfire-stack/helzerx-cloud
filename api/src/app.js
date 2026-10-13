@@ -152,7 +152,7 @@ export function createApp({ config, db, logger }) {
           claimExpiresAt: result.order.expires_at
         },
         discord: {
-          inviteUrl: 'https://discord.com/invite/REPLACE_WITH_OFFICIAL_INVITE',
+          nextStep: 'Join the official HelzerX Discord server and use the /claim command once the Discord bot is available.',
           claimCommand: `/claim code:${claimCode}`,
           claimCode,
           expiresInSeconds: 1800
