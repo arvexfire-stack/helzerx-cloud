@@ -299,7 +299,7 @@ export function createApp({ config, db, logger }) {
             (public_reference, request_key, plan_key, plan_snapshot, currency, monthly_amount, state, expires_at)
            VALUES ($1, $2, $3, $4::jsonb, 'USD', $5, 'awaiting_discord', now() + interval '30 minutes')
            ON CONFLICT (request_key) DO NOTHING
-           RETURNING id, public_reference, plan_key, state, created_at, expires_at`,
+           RETURNING id, public_reference, plan_key, plan_snapshot, currency, monthly_amount, state, created_at, expires_at`,
           [publicReference, parsed.data.requestKey, plan.name, JSON.stringify(plan), plan.monthlyUsd]
         );
         if (!inserted.rowCount) {
@@ -336,6 +336,9 @@ export function createApp({ config, db, logger }) {
           reference: result.order.public_reference,
           planId: result.order.plan_key,
           status: result.order.state,
+          plan: result.order.plan_snapshot,
+          currency: result.order.currency,
+          monthlyAmount: result.order.monthly_amount,
           createdAt: result.order.created_at,
           claimExpiresAt: result.order.expires_at
         },
