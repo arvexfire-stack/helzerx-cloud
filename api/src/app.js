@@ -83,7 +83,7 @@ export function createApp({ config, db, logger }) {
   app.get('/api/v1/status', (_req, res) => res.json({
     service: 'helzerx-cloud-order-api',
     orderingEnabled: config.orderingEnabled,
-    integrations: { discord: false, gemini: false, payments: 'manual-not-configured', proxmox: false }
+    integrations: { discord: Boolean(config.discordServiceToken), gemini: false, payments: 'manual-not-configured', proxmox: false }
   }));
 
   const internalServiceAuth = (req, res, next) => {
