@@ -1010,3 +1010,28 @@
   .vps-plan-card .vps-buy-button,.vps-plan-card .vps-buy-button:after{transition:none!important}
   .vps-plan-card .vps-buy-button:hover,.vps-plan-card .vps-buy-button:active{transform:none}
 }
+
+
+/* Order checkout — isolated styles; keeps the existing VPS card layout intact. */
+.hx-checkout-backdrop{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:18px;background:rgba(3,7,18,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.hx-checkout-modal{position:relative;width:min(100%,520px);max-height:min(88dvh,820px);overflow:auto;padding:clamp(22px,5vw,38px);border:1px solid rgba(148,163,184,.24);border-radius:24px;background:linear-gradient(150deg,#101827 0%,#080d18 72%);color:#edf4ff;box-shadow:0 30px 100px rgba(0,0,0,.55)}
+.hx-checkout-close{position:absolute;top:15px;right:15px;display:grid;place-items:center;width:36px;height:36px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:rgba(255,255,255,.04);color:inherit;cursor:pointer}
+.hx-checkout-kicker{display:block;margin-bottom:12px;color:#86b8ff;font-size:10px;font-weight:800;letter-spacing:.16em}
+.hx-checkout-modal h2{max-width:390px;margin:0 38px 22px 0;font-size:clamp(24px,5vw,34px);line-height:1.1;letter-spacing:-.04em}
+.hx-checkout-plan{padding:17px;border:1px solid rgba(148,163,184,.17);border-radius:15px;background:rgba(255,255,255,.035)}
+.hx-checkout-plan>span{display:block;margin-bottom:8px;color:#9fb4d0;font-size:11px;font-weight:800;letter-spacing:.1em}
+.hx-checkout-plan>strong{display:block;font-size:25px}.hx-checkout-plan>strong small{color:#a6b3c6;font-size:11px;font-weight:500}
+.hx-checkout-plan p,.hx-checkout-help,.hx-checkout-warning,.hx-checkout-footnote{color:#aab8cb;font-size:12px;line-height:1.65}
+.hx-checkout-plan p{margin:8px 0 0}
+.hx-checkout-message{display:flex;align-items:center;gap:10px;color:#cbdaf0;font-size:13px}
+.hx-checkout-spin{animation:hx-checkout-spin 1s linear infinite}@keyframes hx-checkout-spin{to{transform:rotate(360deg)}}
+.hx-checkout-error{padding:13px;border:1px solid rgba(248,113,113,.32);border-radius:12px;background:rgba(127,29,29,.16);color:#fecaca;font-size:13px;line-height:1.55}
+.hx-checkout-success{margin-top:18px}.hx-checkout-success>p:first-child{display:flex;align-items:center;gap:8px;color:#b9f6d0;font-size:14px}
+.hx-checkout-code-label{display:block;margin:16px 0 7px;color:#aab8cb;font-size:11px;font-weight:700}
+.hx-checkout-code{display:block;overflow-wrap:anywhere;padding:13px;border:1px dashed rgba(134,184,255,.5);border-radius:12px;background:rgba(59,130,246,.08);color:#dceaff;font-size:12px;user-select:all}
+.hx-checkout-copy,.hx-checkout-discord,.hx-checkout-retry{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:10px;padding:13px;border:1px solid rgba(148,163,184,.23);border-radius:12px;background:rgba(255,255,255,.055);color:#edf4ff;text-decoration:none;font-size:13px;font-weight:750;cursor:pointer}
+.hx-checkout-command{overflow-wrap:anywhere;color:#91a8c6;font-size:11px}
+.hx-checkout-discord{border-color:rgba(96,165,250,.45);background:linear-gradient(100deg,#2563eb,#1d4ed8)}
+.hx-checkout-warning{padding-top:8px;color:#f0c88b}
+.hx-checkout-footnote{margin:18px 0 0;font-size:10px}
+@media(prefers-reduced-motion:reduce){.hx-checkout-spin{animation:none}}
