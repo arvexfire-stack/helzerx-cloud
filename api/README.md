@@ -1,19 +1,19 @@
-# HelzerX Cloud Order API (Stage 1)
+# HelzerX Cloud Order API
 
-This is a separate backend service; the existing React/Vite website is not modified by this stage.
+Separate backend service for the HelzerX Cloud ordering workflow. The existing React/Vite website is not modified by this backend work.
 
-## Current safety boundary
+## Current implementation status
 
-- Online ordering defaults to disabled (`ORDERING_ENABLED=false`).
-- The order endpoint intentionally returns 503 even if the flag is turned on. Stage 2 must implement identity binding, transactional order persistence, and Discord linking before real orders are accepted.
-- Discord, Gemini, payment review, and Proxmox integrations are not implemented in Stage 1.
-- No real secrets belong in GitHub. Use a root-owned environment file or deployment secret manager.
+- Stage 1 foundation: configuration validation, security headers, CORS allowlist, request IDs, rate limiting, health/readiness/status routes, PostgreSQL schema.
+- Stage 2 initial slice: transactional order creation, server-owned plan pricing, request-key idempotency, random public order reference, one-time high-entropy Discord claim code (only its SHA-256 hash is stored), 30-minute expiry, and audit event.
+- Discord bot/ticket creation, staff-only workflow, payment verification UI, Gemini support, and Proxmox provisioning are **not implemented yet**.
+- Ordering defaults to disabled. Do not enable it until plan catalogue, database migration, Discord invite URL, API deployment, bot claim endpoint and full integration tests have been completed.
 
 ## Requirements
 
 - Node.js 22+
-- PostgreSQL 14+ (enable pgcrypto extension for migration 001)
-- A reverse proxy that exposes only the intended HTTPS API routes
+- PostgreSQL 14+ with `pgcrypto` available for migration 001
+- TLS reverse proxy and firewall rules exposing only intended HTTPS routes
 
 ## Local development
 
@@ -21,29 +21,45 @@ This is a separate backend service; the existing React/Vite website is not modif
 cd api
 npm install
 cp .env.example .env
-# Edit .env with local-only values; do not commit it.
+# Set local-only values in .env; never commit secrets.
 npm test
 npm start
 ```
 
-The service listens on `127.0.0.1:3100` by default. Routes:
-- `GET /healthz` — process health
-- `GET /readyz` — database readiness
-- `GET /api/v1/status` — feature status (no secret/config values)
-- `POST /api/v1/orders` — disabled/stub endpoint; does not create an order yet
+Default bind: `127.0.0.1:3100`.
 
-## Initial database setup
+## Routes
 
-Create a dedicated database and a dedicated least-privilege application role outside GitHub. Apply `migrations/001_initial.sql` using a controlled migration process. The runtime role should not have schema-owner or superuser privileges. Back up the database and test restore before storing customer data.
+- `GET /healthz` — process health.
+- `GET /readyz` — database readiness.
+- `GET /api/v1/status` — feature status, no secret values.
+- `POST /api/v1/orders` — creates an order only when `ORDERING_ENABLED=true`.
 
-## Production requirements before deployment
+### Create an order
 
-1. Store environment variables in a root-owned file outside the repository (for example `/etc/helzerx-cloud-api.env`) with restrictive permissions.
-2. Run as a dedicated unprivileged Linux account; bind to loopback behind a TLS reverse proxy.
-3. Configure firewall restrictions, HTTPS, PostgreSQL network isolation, backup/restore, log rotation, monitoring and alerting.
-4. Keep `ORDERING_ENABLED=false` until the entire order and Discord claim flow is implemented and security-tested.
-5. Never enable Proxmox or payment actions based on this Stage 1 scaffold.
+Request body (send a fresh UUID as `requestKey` for each new checkout attempt):
+
+```json
+{
+  "planId": "HXC-V08",
+  "requestKey": "9c8d3c6b-1e2a-4f3d-8c7b-123456789abc"
+}
+```
+
+The API chooses price/specifications from `api/src/plans.js`; it ignores client-supplied prices. A successful first request returns an order reference and a one-time claim code. Save the claim code immediately. Only its SHA-256 hash is stored, so the plaintext cannot be recovered. Replaying the same request key returns the existing order without exposing the claim code again.
+
+**Important:** the returned Discord invite is a placeholder until replaced with the verified official HelzerX server invite. The `/claim` command is a planned bot interface and will not work until the Discord bot and authenticated claim endpoint are implemented in the next stage.
+
+## Database and production safety
+
+1. Reconcile every plan and price against approved live inventory before accepting orders.
+2. Apply `migrations/001_initial.sql` through a controlled migration process. The migration role may need permission to install `pgcrypto`; the runtime role must not be a superuser or schema owner.
+3. Keep database backups and test restoration before collecting customer data.
+4. Run the service as a dedicated unprivileged Linux account; bind to loopback behind a TLS reverse proxy.
+5. Store environment variables in a root-owned file outside the repository (for example `/etc/helzerx-cloud-api.env`) with restrictive permissions.
+6. Keep `ORDERING_ENABLED=false` until the official invite is set, the Discord bot can securely consume claim codes, tests pass, and a monitored production deployment is ready.
+7. Never trigger payment approval or Proxmox actions from a public request. Those require authenticated staff approval and a separately secured idempotent worker.
 
 ## Security notes
 
-The in-memory rate limiter is a small baseline for one process, not distributed abuse protection. Use a shared limiter (e.g. Redis) behind multiple instances. Configure proxy trust only when the reverse proxy topology is understood. The CORS allowlist is not authentication. Add authenticated staff roles, CSRF protection for cookie-based sessions, account-link token hashing, transactional state transitions, and security tests in later stages.
+The in-memory rate limiter is a baseline for one process, not distributed abuse protection. Add a shared limiter such as Redis before horizontal scaling. CORS is not authentication. Configure proxy trust only for a known reverse-proxy topology. The claim token is high entropy and hashed at rest; rate limits, expiry and single-use enforcement must also be applied in the bot claim stage. Never put secrets in frontend code or GitHub.
