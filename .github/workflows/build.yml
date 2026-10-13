@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -17,7 +17,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install dependencies
+      - name: Check repair script syntax
+        run: bash -n scripts/final-repair.sh
+      - name: Install API dependencies
         run: npm install
-      - name: Build production bundle
+        working-directory: api
+      - name: Test order API
+        run: npm test
+        working-directory: api
+      - name: Install frontend dependencies
+        run: npm install
+      - name: Build production frontend
         run: npm run build
