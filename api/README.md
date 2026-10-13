@@ -6,7 +6,8 @@ Separate backend service for the HelzerX Cloud ordering workflow. The existing R
 
 - Stage 1 foundation: configuration validation, security headers, CORS allowlist, request IDs, rate limiting, health/readiness/status routes, PostgreSQL schema.
 - Stage 2 initial slice: transactional order creation, server-owned plan pricing, request-key idempotency, random public order reference, one-time high-entropy Discord claim code (only its SHA-256 hash is stored), 30-minute expiry, and audit event.
-- Discord bot/ticket creation, staff-only workflow, payment verification UI, Gemini support, and Proxmox provisioning are **not implemented yet**.
+- Authenticated API endpoints now support one-time Discord claim consumption and ticket-channel linking.
+- Discord bot/ticket creation is scaffolded separately; staff-only workflow, payment verification UI, Gemini support, and Proxmox provisioning are **not implemented yet**.
 - Ordering defaults to disabled. Do not enable it until plan catalogue, database migration, Discord invite URL, API deployment, bot claim endpoint and full integration tests have been completed.
 
 ## Requirements
@@ -48,7 +49,7 @@ Request body (send a fresh UUID as `requestKey` for each new checkout attempt):
 
 The API chooses price/specifications from `api/src/plans.js`; it ignores client-supplied prices. A successful first request returns an order reference and a one-time claim code. Save the claim code immediately. Only its SHA-256 hash is stored, so the plaintext cannot be recovered. Replaying the same request key returns the existing order without exposing the claim code again.
 
-**Important:** the returned Discord invite is a placeholder until replaced with the verified official HelzerX server invite. The `/claim` command is a planned bot interface and will not work until the Discord bot and authenticated claim endpoint are implemented in the next stage.
+**Important:** the bot requires a real Discord application, verified guild/category/staff-role IDs, and the same strong `DISCORD_SERVICE_TOKEN` in API and bot environment files. Do not enable public orders until these are configured and tested.
 
 ## Database and production safety
 
