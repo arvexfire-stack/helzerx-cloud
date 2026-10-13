@@ -937,3 +937,76 @@
 @media(prefers-reduced-motion:reduce){
   .vps-model-tag-code,.vps-model-tag-scan{animation:none!important}
 }
+
+
+/* High-contrast, tactile 3D purchase buttons — isolated to VPS plan CTA buttons */
+.vps-plan-card .vps-buy-button{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  min-height:48px;
+  margin-top:22px;
+  padding:13px 16px;
+  border:1px solid rgba(151,137,255,.95);
+  border-radius:11px;
+  color:#fff;
+  background:linear-gradient(180deg,#8b7cff 0%,#6650ed 48%,#4b32c8 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.58),inset 0 -3px 0 rgba(29,17,105,.48),0 3px 0 #34218f,0 8px 16px rgba(83,57,220,.27),0 0 18px rgba(113,87,255,.12);
+  text-shadow:0 1px 1px rgba(25,15,90,.3);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.15px;
+  transform:translateY(0);
+  transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s,filter .2s,border-color .2s;
+}
+.vps-plan-card .vps-buy-button:before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:1px 1px 52%;
+  border-radius:9px 9px 50% 50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.27),rgba(255,255,255,0));
+  pointer-events:none;
+}
+.vps-plan-card .vps-buy-button:after{
+  content:"";
+  position:absolute;
+  top:-80%;
+  left:-45%;
+  width:32%;
+  height:260%;
+  transform:rotate(22deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);
+  transition:left .55s ease;
+  pointer-events:none;
+}
+.vps-plan-card .vps-buy-button:hover{
+  color:#fff;
+  border-color:#d3caff;
+  background:linear-gradient(180deg,#a397ff 0%,#745dff 47%,#5338dd 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72),inset 0 -3px 0 rgba(37,22,132,.46),0 4px 0 #34218f,0 12px 24px rgba(83,57,220,.38),0 0 25px rgba(113,87,255,.24);
+  transform:translateY(-3px);
+  filter:saturate(1.12);
+}
+.vps-plan-card .vps-buy-button:hover:after{left:125%}
+.vps-plan-card .vps-buy-button:active{
+  transform:translateY(2px);
+  box-shadow:inset 0 2px 5px rgba(22,13,77,.28),0 1px 0 #34218f,0 3px 8px rgba(83,57,220,.2);
+}
+.vps-plan-card .vps-buy-button.primary{
+  border-color:#c2b5ff;
+  background:linear-gradient(180deg,#c4a2ff 0%,#9861ff 43%,#7036e9 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.76),inset 0 -3px 0 rgba(67,22,145,.48),0 3px 0 #4a209e,0 9px 20px rgba(132,71,255,.34),0 0 22px rgba(153,91,255,.2);
+}
+.vps-plan-card .vps-buy-button.primary:hover{
+  background:linear-gradient(180deg,#d5bdff 0%,#ad78ff 43%,#7c42f5 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.82),inset 0 -3px 0 rgba(67,22,145,.48),0 4px 0 #4a209e,0 13px 27px rgba(132,71,255,.43),0 0 29px rgba(153,91,255,.3);
+}
+.vps-plan-card .vps-buy-button:focus-visible{
+  outline:3px solid rgba(112,202,255,.95);
+  outline-offset:4px;
+}
+@media(prefers-reduced-motion:reduce){
+  .vps-plan-card .vps-buy-button,.vps-plan-card .vps-buy-button:after{transition:none!important}
+  .vps-plan-card .vps-buy-button:hover,.vps-plan-card .vps-buy-button:active{transform:none}
+}
