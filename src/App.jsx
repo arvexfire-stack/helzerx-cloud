@@ -3,9 +3,9 @@ import { ArrowDown, ArrowRight, ArrowUpRight, Check, ChevronDown, Menu, Plus, Sp
 import RibbonScene from './ServerScene.jsx';
 
 const benefits = [
-  { icon: Workflow, title: 'Task Automation', text: 'Spend less time on repetitive work and more time building what matters.' },
-  { icon: Layers3, title: 'Efficient Collaboration', text: 'Bring your tools and projects together in one smooth workflow.' },
-  { icon: Search, title: 'Code Analysis', text: 'Find opportunities to improve quality, clarity, and performance.' }
+  { icon: Zap, title: 'Fast Cloud Compute', text: 'Launch websites, APIs, and workloads on infrastructure built to keep your projects moving.' },
+  { icon: ShieldCheck, title: 'Reliable by Design', text: 'Keep your services organised with clear resource details and a platform designed around stability.' },
+  { icon: Layers3, title: 'Room to Scale', text: 'Start with what you need and grow into more capacity as your projects evolve.' }
 ];
 const faqs = [
  ['What is HelzerX Cloud?', 'HelzerX Cloud is being developed as a home for cloud infrastructure and compute services within the HelzerX ecosystem. Final product details will be published before launch.'],
