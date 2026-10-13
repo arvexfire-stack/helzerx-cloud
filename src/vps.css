@@ -1035,3 +1035,5 @@
 .hx-checkout-warning{padding-top:8px;color:#f0c88b}
 .hx-checkout-footnote{margin:18px 0 0;font-size:10px}
 @media(prefers-reduced-motion:reduce){.hx-checkout-spin{animation:none}}
+
+.hx-checkout-authoritative-price{margin:12px 0;padding:12px;border:1px solid rgba(74,222,128,.24);border-radius:11px;background:rgba(22,163,74,.08);color:#bbf7d0;font-size:12px;line-height:1.55}.hx-checkout-authoritative-price strong{display:block;margin-top:4px;color:#dcfce7;font-size:15px}
