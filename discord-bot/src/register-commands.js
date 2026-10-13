@@ -24,6 +24,15 @@ const commands = [
       .setMinLength(13)
       .setMaxLength(13)),
   new SlashCommandBuilder()
+    .setName('ticket-retry')
+    .setDescription('Staff only: recover an order ticket that is still pending')
+    .addStringOption(option => option
+      .setName('reference')
+      .setDescription('Order reference, e.g. HX-0123456789')
+      .setRequired(true)
+      .setMinLength(13)
+      .setMaxLength(13)),
+  new SlashCommandBuilder()
     .setName('payment-review')
     .setDescription('Staff only: record manual payment approval or rejection')
     .addStringOption(option => option
