@@ -93,7 +93,8 @@ export async function registerAuthRoutes(app) {
     schema:{body:{type:'object',additionalProperties:false,required:['email','password'],properties:{email:{type:'string',format:'email',minLength:5,maxLength:254},password:{type:'string',minLength:1,maxLength:128}}}} }, async (req,reply) => {
     const result = await getPool().query('SELECT id,email,password_hash,display_name,role,status,email_verified_at FROM users WHERE LOWER(email)=LOWER($1)',[req.body.email.trim()]);
     const user = result.rows[0];
-    const dummyHash = 'scrypt$00000000000000000000000000000000
+    const dummyHash = 'scrypt$00000000000000000000000000000000$' + '0'.repeat(128);
+    const valid = await checkPassword(req.body.password, user ? user.password_hash : dummyHash);
     if (!user || !valid) return error(reply,401,'INVALID_CREDENTIALS','Email or password is incorrect.');
     if (user.status !== 'active' || !user.email_verified_at) return error(reply,403,'ACCOUNT_NOT_ACTIVE','Verify your email or contact support to access your account.');
     const session = token(); const csrf = token();
