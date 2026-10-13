@@ -35,6 +35,41 @@ async function apiGet(path) {
   return payload;
 }
 
+async function createTicketAndSend(guild, options, payload) {
+  // Verify the newly-created channel through Discord REST before using it.
+  // If the category path returns Unknown Channel, retry once outside the category.
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const createOptions = attempt === 0
+      ? options
+      : { ...options, parent: null, reason: `${options.reason || 'Ticket creation'} (fallback without category)` };
+    let channel;
+    try {
+      channel = await guild.channels.create(createOptions);
+      const verified = await guild.channels.fetch(channel.id, { force: true });
+      if (!verified) throw new Error('Discord did not return the created ticket channel');
+      await verified.send(payload);
+      return verified;
+    } catch (error) {
+      lastError = error;
+      console.error(JSON.stringify({
+        event: 'ticket_channel_attempt_failed',
+        attempt: attempt + 1,
+        channelId: channel?.id ?? null,
+        parentId: createOptions.parent ?? null,
+        errorCode: error.code ?? null,
+        discordCode: error.rawError?.code ?? null,
+        errorMessage: error.message ?? null,
+        method: error.method ?? error.request?.method ?? null,
+        url: error.url ?? error.request?.url ?? null
+      }));
+      if (error.code !== 10003 && error.rawError?.code !== 10003) throw error;
+      if (channel) await channel.delete('Retry ticket creation after Discord returned Unknown Channel').catch(() => {});
+    }
+  }
+  throw lastError || new Error('Unable to create a usable ticket channel');
+}
+
 async function apiPost(path, body) {
   const response = await fetch(`${apiBase}${path}`, {
     method: 'POST',
@@ -87,14 +122,7 @@ client.on('interactionCreate', async interaction => {
           { id: client.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.ManageChannels] }
         ];
         if (staffRoleId) permissionOverwrites.push({ id: staffRoleId, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] });
-        const channel = await interaction.guild.channels.create({
-          name: `order-${item.reference.toLowerCase()}`,
-          type: ChannelType.GuildText,
-          ...(categoryId ? { parent: categoryId } : {}),
-          topic: `HelzerX order ${item.reference} | customer ${item.discordUserId}`,
-          permissionOverwrites,
-          reason: `Staff recovery for order ${item.reference}`
-        });
+        let channel;
         try {
           const plan = item.plan || {};
           const embed = new EmbedBuilder()
@@ -106,7 +134,14 @@ client.on('interactionCreate', async interaction => {
               { name: 'Monthly price', value: `${item.currency} ${Number(item.monthlyAmount).toFixed(2)} / month`, inline: true },
               { name: 'Resources', value: `${plan.ramGb ?? '—'} GB RAM • ${plan.vcpu ?? '—'} vCPU • ${plan.diskGb ?? '—'} GB disk`, inline: false }
             ).setTimestamp();
-          await channel.send({
+          channel = await createTicketAndSend(interaction.guild, {
+            name: `order-${item.reference.toLowerCase()}`,
+            type: ChannelType.GuildText,
+            ...(categoryId ? { parent: categoryId } : {}),
+            topic: `HelzerX order ${item.reference} | customer ${item.discordUserId}`,
+            permissionOverwrites,
+            reason: `Staff recovery for order ${item.reference}`
+          }, {
             content: `<@${item.discordUserId}>${staffRoleId ? ` <@&${staffRoleId}>` : ''}`,
             embeds: [embed],
             allowedMentions: { users: [item.discordUserId], roles: staffRoleId ? [staffRoleId] : [] }
@@ -193,14 +228,8 @@ client.on('interactionCreate', async interaction => {
         PermissionFlagsBits.ReadMessageHistory
       ]
     });
-    channel = await interaction.guild.channels.create({
-      name: `order-${order.reference.toLowerCase()}`,
-      type: ChannelType.GuildText,
-      ...(categoryId ? { parent: categoryId } : {}),
-      topic: `HelzerX order ${order.reference} | customer ${interaction.user.id}`,
-      permissionOverwrites,
-      reason: `Create private order ticket ${order.reference}`
-    });
+    // Ticket creation and first message are verified before linking the channel.
+    channel = null;
     const plan = order.plan || {};
     const embed = new EmbedBuilder()
       .setTitle('HelzerX Cloud — Order Support')
@@ -215,7 +244,14 @@ client.on('interactionCreate', async interaction => {
       )
       .setFooter({ text: 'HelzerX Cloud • Never share passwords in tickets' })
       .setTimestamp();
-    await channel.send({
+    channel = await createTicketAndSend(interaction.guild, {
+      name: `order-${order.reference.toLowerCase()}`,
+      type: ChannelType.GuildText,
+      ...(categoryId ? { parent: categoryId } : {}),
+      topic: `HelzerX order ${order.reference} | customer ${interaction.user.id}`,
+      permissionOverwrites,
+      reason: `Create private order ticket ${order.reference}`
+    }, {
       content: `<@${interaction.user.id}>${staffRoleId ? ` <@&${staffRoleId}>` : ''}`,
       embeds: [embed],
       allowedMentions: { users: [interaction.user.id], roles: staffRoleId ? [staffRoleId] : [] }
