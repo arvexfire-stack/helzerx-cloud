@@ -125,7 +125,7 @@ export async function registerAuthRoutes(app) {
       if (!found.rowCount) { await client.query('ROLLBACK'); return error(reply,404,'SERVICE_NOT_FOUND','Service not found.'); }
       const service = found.rows[0];
       if (service.order_status !== 'active' || !['running','stopped'].includes(service.status)) { await client.query('ROLLBACK'); return error(reply,409,'SERVICE_NOT_ACTIONABLE','This service cannot perform that action right now.'); }
-      if ((req.body.action==='start' && service.status==='running') || (req.body.action==='stop' && service.status==='stopped')) { await client.query('ROLLBACK'); return error(reply,409,'INVALID_STATE','The service is already in that state.'); }
+      if ((req.body.action==='start' && service.status==='running') || (req.body.action==='stop' && service.status==='stopped') || (req.body.action==='restart' && service.status!=='running')) { await client.query('ROLLBACK'); return error(reply,409,'INVALID_STATE','The service is already in that state.'); }
       const job = await client.query("INSERT INTO provisioning_jobs(service_instance_id,job_type,idempotency_key,status) VALUES($1,$2,$3,'queued') RETURNING id,status,created_at",[service.id,req.body.action,'customer-action:'+service.id+':'+token()]);
       await client.query("INSERT INTO audit_events(actor_user_id,action,target_type,target_id,outcome,request_id) VALUES($1,$2,'service_instance',$3,'success',$4)",[req.customer.id,'service.'+req.body.action+'.queued',service.id,req.id]);
       await client.query('COMMIT');
