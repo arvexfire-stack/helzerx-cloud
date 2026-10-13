@@ -13,10 +13,24 @@ export function createDatabase(config) {
   });
   pool.on('error', () => {
     // Do not log database errors that may include sensitive connection metadata.
-    process.stderr.write(JSON.stringify({ level: 'error', event: 'database_idle_client_error' }) + '\n');
+    process.stderr.write(JSON.stringify({ level: 'error', event: 'database_idle_client_error' }) + '\\n');
   });
   return {
     query: (text, params) => pool.query(text, params),
+    async transaction(work) {
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        const value = await work(client);
+        await client.query('COMMIT');
+        return value;
+      } catch (error) {
+        try { await client.query('ROLLBACK'); } catch { /* preserve original error */ }
+        throw error;
+      } finally {
+        client.release();
+      }
+    },
     async ready() { await pool.query('SELECT 1'); return true; },
     close: () => pool.end()
   };
