@@ -37,7 +37,7 @@ export default function RibbonScene() {
       materials.push(edgeMaterial);
       const curve = (u, lane = 0, phase = 0) => new THREE.Vector3(
         (u - 0.5) * 19.2,
-        Math.sin(u * Math.PI * 2.03 + phase) * 1.75 + Math.sin(u * Math.PI * 4.06 + phase * .5) * .42 + lane,
+        (0.5 - u) * 6.2 + Math.sin(u * Math.PI * 2.15 + phase) * 1.22 + Math.sin(u * Math.PI * 4.3 + phase * .5) * .3 + lane,
         Math.cos(u * Math.PI * 2.03 + phase) * .72 + Math.sin(u * Math.PI * 3.2 + phase) * .16
       );
       const dummy = new THREE.Object3D();
@@ -88,15 +88,17 @@ export default function RibbonScene() {
         const dot = new THREE.Mesh(dustGeo, mat);
         dot.userData = { x: (Math.random() - .5) * 20, y: (Math.random() - .5) * 8, z: (Math.random() - .5) * 2, phase: Math.random() * Math.PI * 2 }; dust.add(dot);
       }
-      let viewWidth = 19.2;
       const resize = () => {
         if (disposed) return;
         const w = Math.max(1, el.clientWidth), h = Math.max(1, el.clientHeight), aspect = w / h;
         renderer.setSize(w, h, false); camera.aspect = aspect;
-        // Fit the complete ribbon width to the canvas: mobile containers are much taller/narrower than desktop.
-        const distanceForWidth = viewWidth / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * aspect);
-        camera.position.set(0, 0, Math.max(w < 620 ? 23 : 16.8, distanceForWidth * 1.08));
-        camera.updateProjectionMatrix(); camera.lookAt(0, 0, 0);
+        // Keep the camera close. The reference artwork deliberately enters/exits the viewport;
+        // fitting its entire 20-unit length on a portrait screen made it look tiny.
+        const portrait = w < 620;
+        camera.fov = portrait ? 39 : 35;
+        camera.position.set(0, 0, portrait ? 13.2 : 17.2);
+        camera.updateProjectionMatrix();
+        camera.lookAt(0, portrait ? 0.15 : 0, 0);
       };
       resizeObserver = new ResizeObserver(resize); resizeObserver.observe(el); resize();
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
