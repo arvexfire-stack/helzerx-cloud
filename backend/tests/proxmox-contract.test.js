@@ -19,3 +19,16 @@ test('power actions are allowlisted', () => {
   assert.match(source, /endpointByAction = \{ start: 'start', stop: 'stop', restart: 'reboot' \}/);
   assert.match(source, /Unsupported power action/);
 });
+
+test('worker waits for Proxmox task completion before marking service state', async () => {
+  const worker = await readFile(new URL('../src/worker.js', import.meta.url), 'utf8');
+  assert.match(worker, /order_status !== 'active'/);
+  assert.match(worker, /await proxmox\.waitForTask/);
+  assert.match(worker, /FOR UPDATE SKIP LOCKED/);
+  assert.match(worker, /job_type IN \('start','stop','restart'\)/);
+});
+test('Proxmox adapter validates and waits for task IDs', () => {
+  assert.match(source, /async waitForTask/);
+  assert.match(source, /Invalid Proxmox task ID/);
+  assert.match(source, /PROXMOX_TASK_FAILED/);
+});
