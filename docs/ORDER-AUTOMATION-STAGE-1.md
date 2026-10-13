@@ -1,24 +1,29 @@
-# Stage 1 — Backend Foundation
+# Order Automation — Backend Progress
 
-## Delivered in repository
+## Completed in GitHub
 
-- Isolated `api/` Node.js service; root frontend package and existing UI remain untouched.
-- Validated environment configuration and fail-closed ordering feature flag.
-- Helmet security headers, origin allowlist, bounded JSON body, request IDs, and basic process-local rate limiting.
-- Health, database-readiness, and non-secret status endpoints.
-- Server-owned VPS plan catalogue (prices/specs must be verified against approved commercial inventory before real orders).
-- PostgreSQL initial schema for orders, Discord links, tickets, payment review, provisioning jobs, and audit events.
-- Structured logs with common secret-key redaction.
-- Initial configuration tests and setup documentation.
+- Isolated Node.js API foundation, validated configuration, security headers, CORS allowlist, request IDs, bounded JSON bodies, basic rate limiting, health/readiness/status routes.
+- PostgreSQL schema for orders, Discord claim links, private tickets, payment reviews, provisioning jobs, and audit events.
+- Transactional order creation with server-side plan pricing, request-key idempotency, high-entropy one-time claim codes stored as hashes, and 30-minute expiry.
+- Authenticated internal API endpoints for single-use claim consumption and ticket-channel linking.
+- Separate Discord bot package with `/claim` slash command, ephemeral claim input, private ticket channel permission overwrites, customer/staff visibility, order embed, and API audit linking.
+- Follow-up migration makes Discord identity nullable before a customer claims the code.
+- API route tests include ordering fail-closed behavior, request validation, status output, and unauthenticated internal-route rejection.
 
-## Not yet delivered
+## Not yet production-ready
 
-Discord bot/ticket automation, single-use Discord claim flow, Gemini integration, staff authentication/authorisation, manual payment review endpoints, transactional order creation, shared rate limiting, Proxmox worker, deployment service unit, production secrets, and live VPS provisioning.
+- The API and bot have not been installed or run in the live environment in this task; test results are not yet verified.
+- Discord application token, service token, guild/category/staff role IDs, database, migration application, and service units still need secure configuration on the server.
+- Plan pricing/resource catalogue must be reconciled with the actual inventory and commercial terms.
+- The bot uses a basic shared bearer service secret; keep the API bound to loopback/private networking and protect the secret. Add rotation and stronger request signing if bot/API cross a network boundary.
+- Staff-only order state transitions, payment evidence/review UI, Gemini support, secure Proxmox worker, retries/reconciliation, monitoring, backups, and disaster recovery remain future stages.
+- A failed Discord channel creation after claim consumption requires staff recovery; implement a dedicated recovery/retry flow before enabling public ordering at scale.
 
-## Release gates
+## Safe rollout gates
 
-- Keep ordering disabled.
-- Confirm real prices, resources, stock, terms, refunds, and service limits.
-- Run `npm install` and `npm test` in `api/`; run a migration in staging; run a security review.
-- Deploy the API as a separate service behind HTTPS without changing the frontend process.
-- Continue with Stage 2 only after backend/database baseline is configured.
+1. Keep `ORDERING_ENABLED=false`.
+2. Configure API and bot secrets outside GitHub with restrictive file permissions.
+3. Apply migrations 001 and 002 in order using a controlled migration role.
+4. Install dependencies and run `npm test` in `api/`; install `discord-bot/` dependencies and register commands in a staging guild.
+5. Test expired/used codes, unauthorized service calls, simultaneous duplicate claims, role/category permission overwrites, bot restart, and ticket creation failure.
+6. Enable orders only after successful end-to-end staging and review of real plan inventory.
