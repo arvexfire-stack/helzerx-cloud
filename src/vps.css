@@ -653,3 +653,8 @@
 
 /* Country flags in the VPS region cards */
 .vps-country-flag{display:block;width:32px;height:24px;object-fit:cover;border-radius:4px;box-shadow:0 2px 7px rgba(25,24,55,.12);}
+
+
+/* Remote brand marks for the CPU model selector */
+.vps-cpu-brand-logo{width:22px;height:22px;flex:0 0 22px;object-fit:contain;display:block;}
+.vps-cpu-select{gap:8px!important;}
