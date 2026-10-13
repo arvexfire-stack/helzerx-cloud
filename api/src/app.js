@@ -224,7 +224,7 @@ export function createApp({ config, db, logger }) {
         );
         if (!locked.rowCount) return { kind: 'not_found' };
         const order = locked.rows[0];
-        if (!['awaiting_payment', 'payment_review'].includes(order.state)) return { kind: 'state_conflict', state: order.state };
+        if (!['ticket_open', 'awaiting_staff_review', 'awaiting_payment', 'payment_review'].includes(order.state)) return { kind: 'state_conflict', state: order.state };
         if (order.currency.trim() !== parsed.data.currency || Number(order.monthly_amount) !== parsed.data.amount) {
           return { kind: 'amount_mismatch', currency: order.currency.trim(), amount: Number(order.monthly_amount) };
         }
