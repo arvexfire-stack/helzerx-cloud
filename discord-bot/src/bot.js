@@ -20,6 +20,21 @@ const serviceToken = process.env.DISCORD_SERVICE_TOKEN;
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
+async function apiGet(path) {
+  const response = await fetch(`${apiBase}${path}`, {
+    headers: { authorization: `Bearer ${serviceToken}` },
+    signal: AbortSignal.timeout(8000)
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(payload.error || `API returned ${response.status}`);
+    error.status = response.status;
+    error.code = payload.error;
+    throw error;
+  }
+  return payload;
+}
+
 async function apiPost(path, body) {
   const response = await fetch(`${apiBase}${path}`, {
     method: 'POST',
@@ -52,13 +67,58 @@ client.on('interactionCreate', async interaction => {
   if (!interaction.inGuild() || interaction.guildId !== guildId) {
     return interaction.reply({ content: 'Please use this command in the official HelzerX server.', ephemeral: true });
   }
-  if (interaction.commandName === 'order-status' || interaction.commandName === 'payment-review') {
+  if (['order-status', 'payment-review', 'ticket-retry'].includes(interaction.commandName)) {
     const member = await interaction.guild.members.fetch(interaction.user.id).catch(() => null);
     if (!staffRoleId || !member?.roles.cache.has(staffRoleId)) {
       return interaction.reply({ content: 'This command is restricted to authorized HelzerX staff.', ephemeral: true });
     }
     await interaction.deferReply({ ephemeral: true });
     try {
+      if (interaction.commandName === 'ticket-retry') {
+        const reference = interaction.options.getString('reference', true).trim().toUpperCase();
+        const pending = await apiGet(`/api/v1/internal/discord/pending-tickets?guildId=${guildId}`);
+        const item = pending.tickets.find(ticket => ticket.reference === reference);
+        if (!item) return interaction.editReply({ content: 'No pending ticket recovery was found for that reference. It may already be linked, or staff must investigate the order manually.' });
+        if (!item.discordUserId) return interaction.editReply({ content: 'This order has no linked Discord customer. Manual staff recovery is required.' });
+        const everyoneRole = interaction.guild.roles.everyone;
+        const permissionOverwrites = [
+          { id: everyoneRole.id, deny: [PermissionFlagsBits.ViewChannel] },
+          { id: item.discordUserId, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.AttachFiles] },
+          { id: client.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.ManageChannels] }
+        ];
+        if (staffRoleId) permissionOverwrites.push({ id: staffRoleId, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory] });
+        const channel = await interaction.guild.channels.create({
+          name: `order-${item.reference.toLowerCase()}`,
+          type: ChannelType.GuildText,
+          ...(categoryId ? { parent: categoryId } : {}),
+          topic: `HelzerX order ${item.reference} | customer ${item.discordUserId}`,
+          permissionOverwrites,
+          reason: `Staff recovery for order ${item.reference}`
+        });
+        try {
+          const plan = item.plan || {};
+          const embed = new EmbedBuilder()
+            .setTitle('HelzerX Cloud — Recovered Order Ticket')
+            .setDescription('A staff member recovered this order ticket. Please do not post passwords, API keys, or other secrets.')
+            .addFields(
+              { name: 'Order reference', value: item.reference, inline: true },
+              { name: 'Plan', value: item.planId, inline: true },
+              { name: 'Monthly price', value: `${item.currency} ${Number(item.monthlyAmount).toFixed(2)} / month`, inline: true },
+              { name: 'Resources', value: `${plan.ramGb ?? '—'} GB RAM • ${plan.vcpu ?? '—'} vCPU • ${plan.diskGb ?? '—'} GB disk`, inline: false }
+            ).setTimestamp();
+          await channel.send({
+            content: `<@${item.discordUserId}>${staffRoleId ? ` <@&${staffRoleId}>` : ''}`,
+            embeds: [embed],
+            allowedMentions: { users: [item.discordUserId], roles: staffRoleId ? [staffRoleId] : [] }
+          });
+          await apiPost('/api/v1/internal/discord/ticket-channel', { orderId: item.orderId, guildId, channelId: channel.id });
+        } catch (error) {
+          console.error(JSON.stringify({ event: 'ticket_recovery_failed', orderReference: item.reference, errorName: error.name }));
+          await interaction.editReply({ content: `A recovery channel was created but could not be linked. Keep it private and contact the system administrator. Reference: ${item.reference}` });
+          return;
+        }
+        return interaction.editReply({ content: `Recovered private ticket for **${item.reference}**: ${channel}` });
+      }
       if (interaction.commandName === 'order-status') {
         const reference = interaction.options.getString('reference', true).trim().toUpperCase();
         const response = await apiPost('/api/v1/internal/staff/order-status', { reference });
