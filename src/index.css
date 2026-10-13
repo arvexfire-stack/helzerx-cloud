@@ -329,3 +329,33 @@
 .benefit-card h3,.benefit-card p,.benefit-number,.benefit-icon,.benefit-card>a{backface-visibility:hidden}
 @media(max-width:760px){.benefit-card{backdrop-filter:blur(20px) saturate(1.25);-webkit-backdrop-filter:blur(20px) saturate(1.25)}}
 @media(prefers-reduced-motion:reduce){.benefit-card:before{filter:none}}
+
+
+/* Homepage VPS pricing cards mirror the dedicated /vps/ catalogue. */
+.home-vps-pricing .pricing-title{align-items:flex-end;gap:36px}
+.home-pricing-intro{max-width:390px}
+.home-pricing-intro p{font-size:11px;line-height:1.9;color:#9693a4;margin:0 0 12px}
+.home-pricing-intro .underlined-link{font-size:10px}
+.home-vps-plan-grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:17px}
+.home-vps-plan-card{min-width:0;padding:25px 22px 21px;border-radius:15px;background:linear-gradient(145deg,#fff,#f8f7ff 68%,#f1f4ff);border-color:rgba(222,219,247,.9);box-shadow:inset 0 1px 0 #fff,0 12px 30px rgba(63,55,124,.055)}
+.home-vps-plan-card:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(240px circle at 0 0,rgba(255,255,255,.85),transparent 68%)}
+.home-vps-plan-card>*{position:relative;z-index:1}
+.home-vps-plan-card.featured{border-color:#c8c2ff;box-shadow:0 14px 38px rgba(112,101,255,.1),inset 0 1px 0 #fff}
+.home-vps-plan-card h3{font:700 13px Manrope,sans-serif;letter-spacing:.3px;color:#4b4663;margin:20px 0 7px}
+.home-vps-plan-card>p{font-size:10px;line-height:1.7;min-height:17px}
+.home-vps-plan-card .plan-price{gap:6px;margin:22px 0 17px}
+.home-vps-plan-card .plan-price strong{font-size:34px;font-weight:600;letter-spacing:-1.5px}
+.home-vps-plan-card .plan-price>span{font-size:9px;letter-spacing:.6px}
+.home-vps-plan-card .plan-price>small{white-space:nowrap}
+.home-vps-plan-card .plan-separator{background:#e9e6f5}
+.home-vps-plan-card .plan-label{font-size:7px;letter-spacing:1.1px}
+.home-vps-plan-card ul{gap:10px;margin:15px 0 22px}
+.home-vps-plan-card li{align-items:flex-start;line-height:1.55;font-size:9px}
+.home-vps-plan-card li svg{flex:0 0 auto;margin-top:1px}
+.home-vps-plan-card .plan-button{margin-top:auto;border-radius:8px;padding:12px 13px}
+.home-pricing-footer{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-top:27px}
+.home-pricing-footer>span{display:flex;align-items:flex-start;gap:8px;font-size:9px;line-height:1.7;color:#9693a4}
+.home-pricing-footer>span svg{flex:0 0 auto;color:#8d83f4}
+.home-pricing-footer .primary-action{white-space:nowrap}
+@media(max-width:900px){.home-vps-plan-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-vps-pricing .pricing-title{gap:24px}}
+@media(max-width:650px){.home-vps-plan-grid{grid-template-columns:1fr;gap:13px}.home-vps-plan-card{padding:24px 22px 20px}.home-pricing-footer{align-items:flex-start;flex-direction:column}.home-pricing-footer .primary-action{margin-top:2px}.home-vps-pricing .pricing-title{display:block}.home-pricing-intro{margin-top:18px}}
