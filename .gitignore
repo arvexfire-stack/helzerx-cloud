@@ -1,0 +1,7 @@
+# Local API secrets and runtime artifacts — never commit these files
+api/.env
+api/.env.*
+!api/.env.example
+api/node_modules/
+api/coverage/
+api/*.log
