@@ -76,6 +76,21 @@ export function createProxmoxClient() {
       const result = await request('POST', '/nodes/' + encodeURIComponent(node) + '/lxc/' + vmid + '/status/' + endpoint);
       return { taskId: result, vmid, node, action };
     },
+    async waitForTask({ node, taskId, timeoutMs = 120000 }) {
+      node = safeSegment(node, 'node');
+      if (!allowedNodes.includes(node)) throw new Error('Node is not in the administrator allowlist');
+      if (typeof taskId !== 'string' || !taskId.startsWith('UPID:') || taskId.length > 512) throw new Error('Invalid Proxmox task ID');
+      const deadline = Date.now() + timeoutMs;
+      while (Date.now() < deadline) {
+        const task = await request('GET', '/nodes/' + encodeURIComponent(node) + '/tasks/' + encodeURIComponent(taskId) + '/status');
+        if (task && task.status === 'stopped') {
+          if (task.exitstatus !== 'OK') throw Object.assign(new Error('Proxmox task failed'), { code: 'PROXMOX_TASK_FAILED' });
+          return task;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+      throw Object.assign(new Error('Proxmox task timed out'), { code: 'PROXMOX_TASK_TIMEOUT' });
+    },
     async status({ node, vmid }) {
       node = safeSegment(node, 'node');
       if (!allowedNodes.includes(node)) throw new Error('Node is not in the administrator allowlist');
