@@ -180,6 +180,100 @@ export function createApp({ config, db, logger }) {
     } catch (err) { next(err); }
   });
 
+
+  // Staff operations are reachable only through the authenticated local Discord bot.
+  const orderStatusSchema = z.object({ reference: z.string().regex(/^HX-[A-F0-9]{10}$/) }).strict();
+  app.post('/api/v1/internal/staff/order-status', internalServiceAuth, async (req, res, next) => {
+    const parsed = orderStatusSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'invalid_order_reference', requestId: req.requestId });
+    try {
+      const result = await db.query(
+        `SELECT public_reference, plan_key, plan_snapshot, currency, monthly_amount, state,
+                discord_user_id, created_at, updated_at
+         FROM orders WHERE public_reference = $1`,
+        [parsed.data.reference]
+      );
+      if (!result.rowCount) return res.status(404).json({ error: 'order_not_found', requestId: req.requestId });
+      const order = result.rows[0];
+      return res.json({ order: {
+        reference: order.public_reference, planId: order.plan_key, plan: order.plan_snapshot,
+        currency: order.currency, monthlyAmount: order.monthly_amount, status: order.state,
+        discordUserId: order.discord_user_id, createdAt: order.created_at, updatedAt: order.updated_at
+      }, requestId: req.requestId });
+    } catch (err) { next(err); }
+  });
+
+  const paymentReviewSchema = z.object({
+    reference: z.string().regex(/^HX-[A-F0-9]{10}$/),
+    decision: z.enum(['approve', 'reject']),
+    amount: z.number().finite().positive(),
+    currency: z.string().length(3).transform(value => value.toUpperCase()),
+    evidenceReference: z.string().trim().max(500).optional().default(''),
+    reason: z.string().trim().min(5).max(1000),
+    reviewerDiscordId: z.string().regex(/^[0-9]{15,22}$/)
+  }).strict();
+  app.post('/api/v1/internal/staff/payment-review', internalServiceAuth, async (req, res, next) => {
+    const parsed = paymentReviewSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'invalid_payment_review', requestId: req.requestId });
+    try {
+      const outcome = await db.transaction(async client => {
+        const locked = await client.query(
+          `SELECT id, public_reference, plan_key, currency, monthly_amount, state
+           FROM orders WHERE public_reference = $1 FOR UPDATE`,
+          [parsed.data.reference]
+        );
+        if (!locked.rowCount) return { kind: 'not_found' };
+        const order = locked.rows[0];
+        if (!['awaiting_payment', 'payment_review'].includes(order.state)) return { kind: 'state_conflict', state: order.state };
+        if (order.currency.trim() !== parsed.data.currency || Number(order.monthly_amount) !== parsed.data.amount) {
+          return { kind: 'amount_mismatch', currency: order.currency.trim(), amount: Number(order.monthly_amount) };
+        }
+        const approved = parsed.data.decision === 'approve';
+        const review = await client.query(
+          `INSERT INTO payment_reviews
+             (order_id, status, amount, currency, evidence_reference, reviewer_discord_id, reason)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
+           RETURNING id, status, reviewed_at`,
+          [order.id, approved ? 'approved' : 'rejected', parsed.data.amount, parsed.data.currency,
+            parsed.data.evidenceReference || null, parsed.data.reviewerDiscordId, parsed.data.reason]
+        );
+        const nextState = approved ? 'paid_verified' : 'payment_rejected';
+        await client.query('UPDATE orders SET state = $2, updated_at = now() WHERE id = $1', [order.id, nextState]);
+        await client.query(
+          `INSERT INTO audit_events (actor_type, actor_id, action, target_type, target_id, request_id, metadata)
+           VALUES ('staff', $1, $2, 'order', $3, $4, $5::jsonb)`,
+          [parsed.data.reviewerDiscordId, approved ? 'payment.approved' : 'payment.rejected', order.id,
+            req.requestId, JSON.stringify({ reviewId: review.rows[0].id, amount: parsed.data.amount,
+              currency: parsed.data.currency, evidenceReference: parsed.data.evidenceReference || null, reason: parsed.data.reason })]
+        );
+        return { kind: 'ok', reference: order.public_reference, state: nextState, review: review.rows[0] };
+      });
+      if (outcome.kind === 'not_found') return res.status(404).json({ error: 'order_not_found', requestId: req.requestId });
+      if (outcome.kind === 'state_conflict') return res.status(409).json({ error: 'order_state_conflict', currentState: outcome.state, requestId: req.requestId });
+      if (outcome.kind === 'amount_mismatch') return res.status(409).json({ error: 'payment_amount_mismatch', expectedAmount: outcome.amount, expectedCurrency: outcome.currency, requestId: req.requestId });
+      return res.json({ reference: outcome.reference, status: outcome.state, review: outcome.review, provisioningStarted: false, requestId: req.requestId });
+    } catch (err) { next(err); }
+  });
+
+  app.get('/api/v1/internal/discord/pending-tickets', internalServiceAuth, async (req, res, next) => {
+    try {
+      const guild = req.query.guildId;
+      if (typeof guild !== 'string' || !/^[0-9]{15,22}$/.test(guild) || guild !== config.discordGuildId) {
+        return res.status(400).json({ error: 'invalid_guild', requestId: req.requestId });
+      }
+      const result = await db.query(
+        `SELECT t.order_id AS "orderId", t.guild_id AS "guildId", o.public_reference AS reference,
+                o.plan_key AS "planId", o.plan_snapshot AS plan, o.currency, o.monthly_amount AS "monthlyAmount",
+                o.discord_user_id AS "discordUserId"
+         FROM tickets t JOIN orders o ON o.id = t.order_id
+         WHERE t.guild_id = $1 AND t.state = 'pending' AND t.channel_id IS NULL
+         ORDER BY t.created_at ASC LIMIT 50`,
+        [guild]
+      );
+      return res.json({ tickets: result.rows, requestId: req.requestId });
+    } catch (err) { next(err); }
+  });
+
   app.post('/api/v1/orders', async (req, res, next) => {
     if (!config.orderingEnabled) {
       return res.status(503).json({ error: 'ordering_not_enabled', message: 'Online ordering is not enabled yet.', requestId: req.requestId });
