@@ -656,5 +656,5 @@
 
 
 /* Remote brand marks for the CPU model selector */
-.vps-cpu-brand-logo{width:22px;height:22px;flex:0 0 22px;object-fit:contain;display:block;}
+.vps-cpu-brand-logo{width:48px;height:36px;flex:0 0 48px;object-fit:contain;display:block;border-radius:5px;background:#fff;box-shadow:0 2px 8px rgba(25,24,55,.10);}
 .vps-cpu-select{gap:8px!important;}
