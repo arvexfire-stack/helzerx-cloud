@@ -78,7 +78,8 @@ export default function OrderCheckout({ plan, popular }) {
             {order && (
               <div className="hx-checkout-success" aria-live="polite">
                 <p><Check size={16}/> Order created: <strong>{order.order.reference}</strong></p>
-                <p className="hx-checkout-help">Save this one-time claim code, then join the official Discord server and run the command below. The code expires in 30 minutes.</p>
+                <p className="hx-checkout-authoritative-price">Server catalogue amount: <strong>{order.order.currency} {Number(order.order.monthlyAmount).toFixed(2)} / month</strong></p>
+                <p className="hx-checkout-help">This server-side catalogue amount is authoritative for the order. The CPU selector's displayed prices are estimates and may differ. Save this one-time claim code, then join the official Discord server and run the command below. The code expires in 30 minutes.</p>
                 <label className="hx-checkout-code-label" htmlFor="hx-claim-code">One-time claim code</label>
                 <code id="hx-claim-code" className="hx-checkout-code">{order.discord.claimCode}</code>
                 <button type="button" className="hx-checkout-copy" onClick={copyClaimCommand}><Copy size={15}/>{copied ? 'Claim command copied' : 'Copy /claim command'}</button>
