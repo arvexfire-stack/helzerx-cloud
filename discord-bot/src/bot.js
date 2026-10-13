@@ -34,6 +34,10 @@ async function apiPost(path, body) {
   if (!response.ok) {
     const error = new Error(payload.error || `API returned ${response.status}`);
     error.status = response.status;
+    error.code = payload.error;
+    error.currentState = payload.currentState;
+    error.expectedAmount = payload.expectedAmount;
+    error.expectedCurrency = payload.expectedCurrency;
     throw error;
   }
   return payload;
@@ -44,10 +48,48 @@ client.once('ready', () => {
 });
 
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isChatInputCommand() || interaction.commandName !== 'claim') return;
+  if (!interaction.isChatInputCommand()) return;
   if (!interaction.inGuild() || interaction.guildId !== guildId) {
     return interaction.reply({ content: 'Please use this command in the official HelzerX server.', ephemeral: true });
   }
+  if (interaction.commandName === 'order-status' || interaction.commandName === 'payment-review') {
+    const member = await interaction.guild.members.fetch(interaction.user.id).catch(() => null);
+    if (!staffRoleId || !member?.roles.cache.has(staffRoleId)) {
+      return interaction.reply({ content: 'This command is restricted to authorized HelzerX staff.', ephemeral: true });
+    }
+    await interaction.deferReply({ ephemeral: true });
+    try {
+      if (interaction.commandName === 'order-status') {
+        const reference = interaction.options.getString('reference', true).trim().toUpperCase();
+        const response = await apiPost('/api/v1/internal/staff/order-status', { reference });
+        const order = response.order;
+        return interaction.editReply({
+          content: `**Order ${order.reference}**\nPlan: ${order.planId}\nStatus: ${order.status}\nMonthly price: ${order.currency} ${Number(order.monthlyAmount).toFixed(2)}\nCustomer: ${order.discordUserId ? `<@${order.discordUserId}>` : 'Not linked'}`
+        });
+      }
+      const reference = interaction.options.getString('reference', true).trim().toUpperCase();
+      const decision = interaction.options.getString('decision', true);
+      const amount = interaction.options.getNumber('amount', true);
+      const currency = interaction.options.getString('currency', true).trim().toUpperCase();
+      const reason = interaction.options.getString('reason', true).trim();
+      const evidenceReference = interaction.options.getString('evidence', false)?.trim() || '';
+      const result = await apiPost('/api/v1/internal/staff/payment-review', {
+        reference, decision, amount, currency, reason, evidenceReference,
+        reviewerDiscordId: interaction.user.id
+      });
+      return interaction.editReply({
+        content: `Payment review recorded for **${result.reference}**. New status: **${result.status}**. Provisioning was not started.`
+      });
+    } catch (error) {
+      const messages = {
+        order_not_found: 'Order not found. Check the reference.',
+        order_state_conflict: `This order cannot be reviewed from its current status (${error.currentState || 'changed'}).`,
+        payment_amount_mismatch: `Amount/currency mismatch. Expected ${error.expectedCurrency || 'the order currency'} ${error.expectedAmount ?? 'the order amount'}.`
+      };
+      return interaction.editReply({ content: messages[error.code] || (error.status === 404 ? 'Order not found.' : error.status === 409 ? 'The order changed or the payment details do not match. Re-check the order before retrying.' : 'The order service is unavailable. No confirmation was recorded.') });
+    }
+  }
+  if (interaction.commandName !== 'claim') return;
   const code = interaction.options.getString('code', true).trim();
   await interaction.deferReply({ ephemeral: true });
   let claimed;
