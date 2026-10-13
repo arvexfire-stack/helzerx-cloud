@@ -578,3 +578,10 @@
   .vps-cpu-select select{flex:1;min-width:0}
   .vps-select-row>select{flex:1;min-width:0}
 }
+
+.vps-cpu-select{min-width:215px}
+.vps-cpu-select select{max-width:185px}
+@media(max-width:760px){
+  .vps-cpu-select{min-width:0}
+  .vps-cpu-select select{max-width:none}
+}
