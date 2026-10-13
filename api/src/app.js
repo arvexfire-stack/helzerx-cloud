@@ -1,6 +1,6 @@
 import express from 'express';
 import helmet from 'helmet';
-import { createHash, randomBytes, randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
 import { getPlan } from './plans.js';
 
@@ -85,6 +85,100 @@ export function createApp({ config, db, logger }) {
     orderingEnabled: config.orderingEnabled,
     integrations: { discord: false, gemini: false, payments: 'manual-not-configured', proxmox: false }
   }));
+
+  const internalServiceAuth = (req, res, next) => {
+    const configured = config.discordServiceToken;
+    const supplied = req.get('authorization') || '';
+    const expected = configured ? `Bearer ${configured}` : '';
+    const a = Buffer.from(supplied);
+    const b = Buffer.from(expected);
+    if (!configured || a.length !== b.length || !timingSafeEqual(a, b)) {
+      return res.status(configured ? 401 : 503).json({ error: configured ? 'unauthorized_service' : 'discord_integration_not_configured', requestId: req.requestId });
+    }
+    next();
+  };
+
+  const claimSchema = z.object({ code: z.string().min(32).max(128), discordUserId: z.string().regex(/^[0-9]{15,22}$/), guildId: z.string().regex(/^[0-9]{15,22}$/) }).strict();
+  app.post('/api/v1/internal/discord/claim', internalServiceAuth, async (req, res, next) => {
+    const parsed = claimSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'invalid_claim_request', requestId: req.requestId });
+    try {
+      const claimHash = hashClaimCode(parsed.data.code);
+      const result = await db.transaction(async client => {
+        const claimed = await client.query(
+          `UPDATE discord_links SET consumed_at = now(), discord_user_id = $2
+           WHERE claim_token_hash = $1 AND consumed_at IS NULL AND expires_at > now()
+           RETURNING order_id`,
+          [claimHash, parsed.data.discordUserId]
+        );
+        if (!claimed.rowCount) return null;
+        const orderResult = await client.query(
+          `UPDATE orders SET discord_user_id = $2, state = 'ticket_open', updated_at = now()
+           WHERE id = $1 AND state = 'awaiting_discord' AND expires_at > now()
+           RETURNING id, public_reference, plan_key, plan_snapshot, monthly_amount, currency`,
+          [claimed.rows[0].order_id, parsed.data.discordUserId]
+        );
+        if (!orderResult.rowCount) throw new Error('CLAIM_ORDER_STATE_INVALID');
+        const order = orderResult.rows[0];
+        await client.query(
+          `INSERT INTO tickets (order_id, guild_id, state) VALUES ($1, $2, 'pending')
+           ON CONFLICT (order_id) DO NOTHING`,
+          [order.id, parsed.data.guildId]
+        );
+        await client.query(
+          `INSERT INTO audit_events (actor_type, actor_id, action, target_type, target_id, request_id, metadata)
+           VALUES ('bot', $1, 'discord.claimed', 'order', $2, $3, $4::jsonb)`,
+          [parsed.data.discordUserId, order.id, req.requestId, JSON.stringify({ guildId: parsed.data.guildId })]
+        );
+        return order;
+      });
+      if (!result) return res.status(404).json({ error: 'claim_invalid_expired_or_used', requestId: req.requestId });
+      return res.status(200).json({
+        order: {
+          id: result.id,
+          reference: result.public_reference,
+          planId: result.plan_key,
+          plan: result.plan_snapshot,
+          monthlyAmount: result.monthly_amount,
+          currency: result.currency
+        },
+        requestId: req.requestId
+      });
+    } catch (err) { next(err); }
+  });
+
+  const ticketChannelSchema = z.object({
+    orderId: z.string().uuid(),
+    guildId: z.string().regex(/^[0-9]{15,22}$/),
+    channelId: z.string().regex(/^[0-9]{15,22}$/)
+  }).strict();
+  app.post('/api/v1/internal/discord/ticket-channel', internalServiceAuth, async (req, res, next) => {
+    const parsed = ticketChannelSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: 'invalid_ticket_channel', requestId: req.requestId });
+    try {
+      const result = await db.transaction(async client => {
+        const updated = await client.query(
+          `UPDATE tickets SET channel_id = $3, state = 'open'
+           WHERE order_id = $1 AND guild_id = $2 AND state = 'pending'
+           RETURNING order_id`,
+          [parsed.data.orderId, parsed.data.guildId, parsed.data.channelId]
+        );
+        if (!updated.rowCount) return false;
+        await client.query(
+          `UPDATE orders SET state = 'ticket_open', updated_at = now() WHERE id = $1`,
+          [parsed.data.orderId]
+        );
+        await client.query(
+          `INSERT INTO audit_events (actor_type, action, target_type, target_id, request_id, metadata)
+           VALUES ('bot', 'discord.ticket_created', 'order', $1, $2, $3::jsonb)`,
+          [parsed.data.orderId, req.requestId, JSON.stringify({ guildId: parsed.data.guildId, channelId: parsed.data.channelId })]
+        );
+        return true;
+      });
+      if (!result) return res.status(409).json({ error: 'ticket_state_conflict', requestId: req.requestId });
+      return res.status(200).json({ status: 'ticket_linked', requestId: req.requestId });
+    } catch (err) { next(err); }
+  });
 
   app.post('/api/v1/orders', async (req, res, next) => {
     if (!config.orderingEnabled) {
