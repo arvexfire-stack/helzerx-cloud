@@ -1,7 +1,7 @@
 name: Build HelzerX Cloud
 on:
   push:
-    branches: [main]
+    branches: [main, feat/control-plane-foundation]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -27,3 +27,6 @@ jobs:
       - name: Check backend JavaScript syntax
         working-directory: backend
         run: npm run check
+      - name: Run backend schema contract tests
+        working-directory: backend
+        run: npm test
