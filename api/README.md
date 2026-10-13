@@ -51,7 +51,7 @@ The API chooses price/specifications from `api/src/plans.js`; it ignores client-
 
 **Important:** the bot requires a real Discord application, verified guild/category/staff-role IDs, and the same strong `DISCORD_SERVICE_TOKEN` in API and bot environment files. Do not enable public orders until these are configured and tested.
 
-## Database and production safety
+## Discord bot setup (staging first)\n\nThe bot source is in `discord-bot/`. Configure a dedicated bot application and invite it only to the intended HelzerX guild with View Channels, Send Messages, Read Message History, and Manage Channels permissions. Set `DISCORD_SERVICE_TOKEN` to the same long random secret in both the API and bot environment files. Set the category and staff-role IDs only after confirming them in Discord. Keep the API bound to loopback and the bot calling it over localhost; do not expose internal routes publicly.\n\nApply migrations in order: `001_initial.sql`, then `002_discord_claim_nullable_user.sql`. Run `npm install` and `npm test` in `api/`, then `npm install` in `discord-bot/`. Register the command with `npm run register` and start the bot with `npm start`. Do not enable ordering until an end-to-end staging test confirms claim expiry, duplicate claims, permission overwrites, staff access, and recovery if Discord channel creation fails.\n\n## Database and production safety
 
 1. Reconcile every plan and price against approved live inventory before accepting orders.
 2. Apply `migrations/001_initial.sql` through a controlled migration process. The migration role may need permission to install `pgcrypto`; the runtime role must not be a superuser or schema owner.
