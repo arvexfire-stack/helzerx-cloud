@@ -33,3 +33,12 @@
 @media(max-width:700px){.visual-stage{height:350px;transform:scale(.9);transform-origin:center center}.server-stack{animation:rack-float-mobile 7s cubic-bezier(.45,0,.55,1) infinite}.chip-l{left:-5px}.chip-r{right:-8px}.orbit-three{width:350px;height:190px}}
 @keyframes rack-float-mobile{0%,100%{transform:scale(.88) rotateX(57deg) rotateZ(-34deg) translateY(0)}50%{transform:scale(.88) rotateX(55deg) rotateZ(-32deg) translateY(-8px)}}
 @media(prefers-reduced-motion:reduce){.visual-stage *, .visual-stage:before{animation:none!important;scroll-behavior:auto!important}.server-stack{transform:rotateX(57deg) rotateZ(-34deg)}}
+
+/* WebGL cinematic server rack */
+.real-visual-stage{isolation:isolate;overflow:visible;min-height:500px;perspective:1200px}
+.real3d-scene{position:absolute;inset:0;width:100%;height:100%;min-height:500px;z-index:0;pointer-events:none}
+.real3d-scene canvas{display:block;width:100%;height:100%;filter:drop-shadow(0 22px 38px rgba(0,30,90,.3))}
+.real-visual-stage .float-chip{z-index:3;backdrop-filter:blur(16px);background:linear-gradient(145deg,rgba(12,20,35,.9),rgba(5,8,15,.72));border-color:rgba(123,175,255,.3);box-shadow:0 12px 36px rgba(0,0,0,.35),0 0 24px rgba(44,121,255,.1)}
+.real-visual-stage .chip-l{top:32%;left:-1%}.real-visual-stage .chip-r{top:54%;right:-2%}
+@media(max-width:900px){.real-visual-stage,.real3d-scene{min-height:410px}.real-visual-stage .chip-l{left:0}.real-visual-stage .chip-r{right:0}}
+@media(max-width:600px){.real-visual-stage,.real3d-scene{min-height:350px}.real-visual-stage .chip-l{top:22%;left:-2%}.real-visual-stage .chip-r{top:70%;right:-1%}}
