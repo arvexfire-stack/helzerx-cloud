@@ -649,3 +649,7 @@
  .config-fields>.primary-action{grid-column:auto}
  .config-price strong{font-size:36px}
 }
+
+
+/* Country flags in the VPS region cards */
+.vps-country-flag{display:block;width:32px;height:24px;object-fit:cover;border-radius:4px;box-shadow:0 2px 7px rgba(25,24,55,.12);}
