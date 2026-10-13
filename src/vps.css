@@ -585,3 +585,67 @@
   .vps-cpu-select{min-width:0}
   .vps-cpu-select select{max-width:none}
 }
+
+
+/* Configurator, comparison table, and high-contrast price readability */
+.vps-configurator{
+  display:grid;grid-template-columns:minmax(230px,.8fr) minmax(0,1.2fr);gap:clamp(24px,4vw,52px);
+  margin:34px 0 42px;padding:clamp(22px,3.2vw,38px);border:1px solid #e3e0f5;border-radius:22px;
+  background:linear-gradient(135deg,#fff 0%,#f7f6ff 58%,#eef6ff 100%);
+  box-shadow:0 4px 10px rgba(46,37,100,.035),0 18px 45px rgba(46,37,100,.075),inset 0 1px 0 #fff;
+}
+.config-kicker{display:block;color:#6355d0;font-size:10px;font-weight:800;letter-spacing:1.5px}
+.config-copy h3,.compare-heading h3{margin:12px 0;font-size:clamp(25px,3vw,36px);line-height:1.15;letter-spacing:-1.2px;color:#27243a}
+.config-copy h3 em,.compare-heading h3 em{font-family:Georgia,serif;font-weight:400;color:#6557d7}
+.config-copy>p,.vps-compare-panel>p{font-size:13px;line-height:1.8;color:#625e75;max-width:360px}
+.config-price{display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-top:25px;padding:18px 20px;border:1px solid #dedaf7;border-radius:14px;background:#fff;box-shadow:0 5px 18px rgba(57,45,127,.055)}
+.config-price>span{font-size:10px;font-weight:800;letter-spacing:1px;color:#625a85}
+.config-price strong{font-size:clamp(34px,4vw,48px);line-height:1.12;font-weight:800;letter-spacing:-1.8px;color:#29234e;font-variant-numeric:tabular-nums}
+.config-price small{font-size:11px;color:#625e75}
+.config-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-content:start}
+.config-fields>label{display:flex;flex-direction:column;gap:7px;color:#403b5e;font-size:11px;font-weight:750}
+.config-fields select{width:100%;min-width:0;min-height:43px;padding:0 12px;border:1px solid #dcd8ee;border-radius:10px;background:#fff;color:#28243f;font:600 12px 'DM Sans',sans-serif;box-shadow:0 2px 4px rgba(45,36,95,.025);outline:none}
+.config-fields select:focus{border-color:#8174ef;box-shadow:0 0 0 3px rgba(129,116,239,.15)}
+.config-summary{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:5px 0 4px;padding:14px;border:1px solid #e4e1f2;border-radius:12px;background:rgba(255,255,255,.78)}
+.config-summary span{display:flex;align-items:flex-start;gap:7px;min-width:0;font-size:11px;line-height:1.55;color:#4d4965;overflow-wrap:anywhere}
+.config-summary svg{flex-shrink:0;color:#6558d6;margin-top:1px}
+.config-fields>.primary-action{grid-column:1/-1;justify-self:start;max-width:100%;font-size:12px}
+.vps-price{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px 8px}
+.vps-price strong{display:inline-block;color:#241f43!important;font-size:clamp(27px,2.2vw,34px)!important;font-weight:850!important;letter-spacing:-1.25px!important;line-height:1.2!important;text-shadow:none!important;font-variant-numeric:tabular-nums}
+.vps-price>span{color:#4f4969!important;font-size:12px!important;font-weight:650}
+.vps-price-usd{flex-basis:100%;display:block;margin-top:3px;color:#615b77!important;font-size:10px;font-weight:650;letter-spacing:.15px}
+.vps-plan-code{color:#403a5b!important}
+.vps-specs>div>span{color:#625c77!important}
+.vps-specs>div>b{color:#302a4b!important;font-size:11px!important;font-weight:800!important;overflow-wrap:anywhere}
+.vps-plan-card ul li{color:#514c67!important}
+.vps-billing-note{color:#625d76!important;font-size:10px!important}
+.vps-pricing-note{color:#514c67!important;line-height:1.8}
+.vps-compare-check{display:flex;align-items:center;gap:5px;margin-left:auto;color:#50496d;font-size:10px;font-weight:700;white-space:nowrap}
+.vps-compare-check input{accent-color:#6c5ce7;width:14px;height:14px}
+.vps-compare-panel{margin:28px 0 22px;padding:clamp(18px,3vw,30px);border:1px solid #dfdcf2;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(52,43,108,.055)}
+.compare-heading{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:15px}
+.compare-heading h3{font-size:clamp(22px,2.7vw,30px)}
+.compare-heading>button{border:1px solid #ddd8f0;border-radius:9px;padding:9px 12px;background:#f8f7ff;color:#4d456f;font-size:11px;font-weight:700;cursor:pointer}
+.compare-table-wrap{width:100%;overflow-x:auto;border:1px solid #e6e3f2;border-radius:12px}
+.vps-compare-table{width:100%;border-collapse:collapse;min-width:460px;text-align:left}
+.vps-compare-table th,.vps-compare-table td{padding:13px 15px;border-bottom:1px solid #eceaf5;color:#39344f;font-size:12px;line-height:1.5}
+.vps-compare-table thead th{background:#f4f2ff;color:#39305f;font-weight:800}
+.vps-compare-table tbody th{font-weight:750;color:#5a5471}
+.vps-compare-table tbody td{font-weight:650;font-variant-numeric:tabular-nums}
+.vps-compare-table tr:last-child th,.vps-compare-table tr:last-child td{border-bottom:0}
+@media(max-width:760px){
+ .vps-configurator{grid-template-columns:1fr;gap:24px;margin:26px 0 32px;padding:20px}
+ .config-fields{gap:12px}
+ .config-summary{grid-template-columns:1fr}
+ .config-fields>.primary-action{justify-self:stretch;justify-content:center}
+ .vps-price strong{font-size:29px!important}
+ .vps-plan-top{flex-wrap:wrap}
+ .vps-compare-check{margin-left:0}
+ .compare-heading{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:420px){
+ .config-fields{grid-template-columns:1fr}
+ .config-summary{grid-column:auto}
+ .config-fields>.primary-action{grid-column:auto}
+ .config-price strong{font-size:36px}
+}
