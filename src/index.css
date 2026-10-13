@@ -171,3 +171,42 @@
  .benefit-card:hover{transform:translate3d(0,-4px,8px) scale(1.005);box-shadow:0 17px 35px rgba(85,69,160,.12)}
 }
 @media(prefers-reduced-motion:reduce){.benefit-card,.benefit-card:after,.benefit-icon,.benefit-card>a{animation:none!important;transition:none!important}.benefit-card:hover{transform:none}}
+
+/* Refined HelzerX motion language: restrained, editorial, tactile — not oversized/glossy AI-card styling. */
+.benefit-grid{gap:18px;perspective:1400px;align-items:stretch}
+.benefit-card{
+ min-height:225px;padding:25px 24px 24px;border-radius:9px;overflow:hidden;
+ background:linear-gradient(145deg,rgba(255,255,255,.97),rgba(248,247,253,.91));
+ border:1px solid rgba(100,91,151,.12);
+ box-shadow:0 2px 5px rgba(55,48,105,.018),inset 0 1px 0 rgba(255,255,255,.95);
+ transform:translate3d(0,0,0);transform-style:preserve-3d;
+ transition:transform .72s cubic-bezier(.2,.75,.25,1),box-shadow .72s,border-color .5s,background .5s;
+}
+.benefit-card:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 20% 0%,rgba(185,174,255,.15),transparent 52%);transition:opacity .6s}
+.benefit-card:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(112deg,transparent 20%,rgba(255,255,255,.55) 48%,transparent 70%);transform:translateX(-120%);transition:transform 1s cubic-bezier(.2,.7,.2,1),opacity .3s}
+.benefit-card.reveal-ready{opacity:0;transform:translate3d(0,28px,0) rotateX(2deg);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .95s cubic-bezier(.2,.7,.2,1),box-shadow .65s,border-color .45s}
+.benefit-card.reveal-ready.reveal-in{opacity:1;transform:translate3d(0,0,0) rotateX(0)}
+.benefit-card:nth-child(1){--card-delay:0ms}
+.benefit-card:nth-child(2){--card-delay:120ms}
+.benefit-card:nth-child(3){--card-delay:240ms}
+.benefit-card.reveal-ready{transition-delay:var(--card-delay,0ms),var(--card-delay,0ms),0ms,0ms}
+.benefit-card:hover{transform:translate3d(0,-6px,8px) rotateX(1deg);border-color:rgba(130,117,216,.3);box-shadow:0 16px 35px rgba(65,54,125,.075),0 3px 8px rgba(75,63,130,.035),inset 0 1px 0 #fff}
+.benefit-card:hover:before{opacity:1}
+.benefit-card:hover:after{opacity:1;transform:translateX(120%)}
+.benefit-icon{width:35px;height:35px;border-radius:10px;transform:translateZ(10px);background:linear-gradient(145deg,#fff,#f4f2ff);box-shadow:0 3px 10px rgba(112,101,255,.07),inset 0 1px 0 #fff;transition:transform .55s cubic-bezier(.2,.75,.25,1),box-shadow .55s}
+.benefit-card:hover .benefit-icon{transform:translate3d(0,-2px,16px);box-shadow:0 7px 15px rgba(112,101,255,.11),inset 0 1px 0 #fff}
+.benefit-number{font-size:7px;letter-spacing:1.25px;transform:translateZ(7px)}
+.benefit-card h3{font-size:14px;font-weight:600;letter-spacing:-.35px;line-height:1.42;margin:19px 0 8px;transform:translateZ(8px)}
+.benefit-card p{font-size:11px;line-height:1.8;max-width:260px;transform:translateZ(5px)}
+.benefit-card>a{right:19px;bottom:18px;width:23px;height:23px;display:grid;place-items:center;border:1px solid rgba(141,131,244,.15);border-radius:50%;background:rgba(255,255,255,.75);transform:translateZ(8px);transition:transform .45s,background .4s,color .4s}
+.benefit-card:hover>a{transform:translate3d(2px,-2px,12px);background:#7770e9;color:white}
+@media(min-width:651px){.benefit-card:nth-child(2){margin-top:8px}.benefit-card:nth-child(3){margin-top:16px}.benefit-card.reveal-ready:nth-child(2){transition-delay:120ms}.benefit-card.reveal-ready:nth-child(3){transition-delay:240ms}}
+@media(max-width:650px){
+ .benefit-grid{gap:12px}
+ .benefit-card{min-height:0;padding:22px 20px 25px;border-radius:10px}
+ .benefit-card:nth-child(n){margin-top:0}
+ .benefit-card h3{font-size:15px;line-height:1.4;margin:16px 0 7px}
+ .benefit-card p{font-size:11px;line-height:1.75;padding-right:12px}
+ .benefit-card:hover{transform:translate3d(0,-3px,3px);box-shadow:0 10px 22px rgba(65,54,125,.07)}
+}
+@media(prefers-reduced-motion:reduce){.benefit-card,.benefit-card:before,.benefit-card:after,.benefit-icon,.benefit-card>a{transition:none!important;animation:none!important}.benefit-card.reveal-ready{opacity:1;transform:none}}
