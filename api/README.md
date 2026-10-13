@@ -7,7 +7,7 @@ Separate backend service for the HelzerX Cloud ordering workflow. The existing R
 - Stage 1 foundation: configuration validation, security headers, CORS allowlist, request IDs, rate limiting, health/readiness/status routes, PostgreSQL schema.
 - Stage 2 initial slice: transactional order creation, server-owned plan pricing, request-key idempotency, random public order reference, one-time high-entropy Discord claim code (only its SHA-256 hash is stored), 30-minute expiry, and audit event.
 - Authenticated API endpoints now support one-time Discord claim consumption and ticket-channel linking.
-- Discord bot/ticket creation is scaffolded separately; staff-only workflow, payment verification UI, Gemini support, and Proxmox provisioning are **not implemented yet**.
+- Discord bot supports `/claim`, staff-only `/order-status`, `/payment-review`, and `/ticket-retry` commands. The API records manual review outcomes and audit events; payment approval does not provision a server.
 - Ordering defaults to disabled. Do not enable it until plan catalogue, database migration, Discord invite URL, API deployment, bot claim endpoint and full integration tests have been completed.
 
 ## Requirements
