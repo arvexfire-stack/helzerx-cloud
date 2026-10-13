@@ -70,8 +70,8 @@ export default function OrderCheckout({ plan, popular }) {
             <h2 id="hx-checkout-title">{order ? 'Your order is ready for Discord' : 'Start your VPS order'}</h2>
             <div className="hx-checkout-plan">
               <span>{plan.name}</span>
-              <strong>${plan.price.toFixed(2)} <small>/ month USD estimate</small></strong>
-              <p>{plan.ram} GB RAM · {plan.cpu} vCPU · {plan.disk} GB NVMe</p>
+              <strong>${(plan.displayPrice ?? plan.price).toFixed(2)} <small>/ month USD estimate</small></strong>
+              <p>{plan.displayCpuModel || plan.cpuModel} · {plan.ram} GB RAM · {plan.cpu} vCPU · {plan.disk} GB NVMe</p>
             </div>
             {loading && <p className="hx-checkout-message"><LoaderCircle className="hx-checkout-spin" size={18}/> Creating a secure order request…</p>}
             {error && <p className="hx-checkout-error" role="alert">{error}</p>}
