@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ServerScene from './ServerScene.jsx';
 import { ArrowDownRight, ArrowRight, ArrowUpRight, Check, ChevronDown, Cloud, Cpu, Database, Globe2, Menu, Network, ShieldCheck, Sparkles, Terminal, Zap } from 'lucide-react';
 
 const plans = [
@@ -13,7 +14,7 @@ const faqs = [
   ['How do I get help?', 'Use the HelzerX support Discord to ask setup questions and get assistance. For production launch, support response expectations will be documented on the service page.']
 ];
 function Logo(){return <a className="brand" href="#top" aria-label="HelzerX Cloud home"><span className="brand-mark"><Cloud size={21}/></span><span>HelzerX <b>Cloud</b></span></a>}
-function ServerVisual(){return <div className="visual-stage" aria-label="Animated three-dimensional cloud server rack illustration"><div className="scene-halo"/><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="orbit orbit-three"/><div className="cloud-core"><Cloud size={75} strokeWidth={1.2}/><span className="core-glow"/><span className="cloud-rim"/></div><div className="server-stack"><div className="rack-side"/><div className="server server-top"><span className="server-light"/><span className="drive-slot"/><i/><i/><i/><span className="server-label">HX / 01</span></div><div className="server server-mid"><span className="server-light"/><span className="drive-slot"/><i/><i/><i/><span className="server-label">HX / 02</span></div><div className="server server-bottom"><span className="server-light"/><span className="drive-slot"/><i/><i/><i/><span className="server-label">HX / 03</span></div><span className="rack-beam beam-a"/><span className="rack-beam beam-b"/></div><div className="data-particle particle-a"/><div className="data-particle particle-b"/><div className="data-particle particle-c"/><div className="float-chip chip-l"><Zap size={15}/> Low latency</div><div className="float-chip chip-r"><ShieldCheck size={15}/> Built to be resilient</div><div className="visual-shadow"/></div>}
+function ServerVisual(){return <div className="visual-stage real-visual-stage"><ServerScene/><div className="float-chip chip-l"><Zap size={15}/> Low latency</div><div className="float-chip chip-r"><ShieldCheck size={15}/> Built to be resilient</div></div>}
 function App(){
  const [menuOpen,setMenuOpen]=useState(false); const [openFaq,setOpenFaq]=useState(0); const [billing,setBilling]=useState('monthly');
  const scrollTo=(id)=>{setMenuOpen(false);document.getElementById(id)?.scrollIntoView({behavior:'smooth'});};
