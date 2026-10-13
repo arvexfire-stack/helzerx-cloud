@@ -8,6 +8,8 @@ const schema = z.object({
   DATABASE_URL: z.string().min(1),
   DATABASE_SSL: z.enum(['true', 'false']).default('false'),
   ORDERING_ENABLED: z.enum(['true', 'false']).default('false'),
+  DISCORD_SERVICE_TOKEN: z.string().default(''),
+  DISCORD_GUILD_ID: z.string().default(''),
   TRUST_PROXY: z.enum(['true', 'false']).default('false'),
   CORS_ORIGINS: z.string().default('https://cloud.helzerx.cyou'),
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info')
@@ -28,6 +30,8 @@ export function loadConfig(env = process.env) {
     databaseUrl: value.DATABASE_URL,
     databaseSsl: value.DATABASE_SSL === 'true',
     orderingEnabled: value.ORDERING_ENABLED === 'true',
+    discordServiceToken: value.DISCORD_SERVICE_TOKEN,
+    discordGuildId: value.DISCORD_GUILD_ID,
     trustProxy: value.TRUST_PROXY === 'true',
     corsOrigins: new Set(value.CORS_ORIGINS.split(',').map(x => x.trim()).filter(Boolean)),
     logLevel: value.LOG_LEVEL
