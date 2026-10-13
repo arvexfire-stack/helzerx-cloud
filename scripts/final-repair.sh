@@ -54,6 +54,8 @@ runuser -u postgres -- psql -v ON_ERROR_STOP=1 -d helzerx_orders -c "GRANT ALL O
 
 NEW_DATABASE_URL="postgres://helzerx_api:${DB_PASSWORD}@127.0.0.1:5432/helzerx_orders"
 export NEW_DATABASE_URL
+# Keep a root-only backup before changing database credentials.
+cp -a "$ENV_FILE" "$ENV_FILE.backup.$(date +%Y%m%d-%H%M%S)"
 python3 - "$ENV_FILE" <<'PY'
 import os, pathlib, re, sys
 p = pathlib.Path(sys.argv[1])
@@ -121,7 +123,7 @@ log "Installing the public API reverse-proxy snippet if a matching Nginx vhost e
 install -d -m 755 /etc/nginx/snippets
 install -m 644 "$ROOT/deploy/helzerx-cloud-api.conf" /etc/nginx/snippets/helzerx-cloud-api.conf
 if command -v nginx >/dev/null && nginx -t >/dev/null 2>&1; then
-  python3 - <<'PY'
+  if python3 - <<'PY'
 import pathlib, re, shutil, time
 root = pathlib.Path('/etc/nginx/sites-enabled')
 domain = 'cloud.helzerx.cyou'
@@ -170,8 +172,7 @@ if not matched:
     raise SystemExit(2)
 print('Nginx API proxy include is present.')
 PY
-  NGINX_PATCH_STATUS=$?
-  if [[ $NGINX_PATCH_STATUS -eq 0 ]]; then
+  then
     nginx -t
     systemctl reload nginx
   else
