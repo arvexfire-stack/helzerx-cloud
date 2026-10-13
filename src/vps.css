@@ -541,3 +541,40 @@
   .vps-plan-card,.vps-plan-card:before,.vps-plan-card:after,.vps-specs>div,.vps-buy-button{transition:none!important}
   .vps-plan-card:hover,.vps-plan-card.vps-featured:hover{transform:none}
 }
+
+
+/* CPU core selector beside the VPS plan filters */
+.vps-select-row{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.vps-cpu-select{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-height:35px;
+  padding:0 10px;
+  border:1px solid rgba(224,221,245,.95);
+  border-radius:9px;
+  color:#7770d9;
+  background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(246,245,255,.94));
+  box-shadow:0 2px 4px rgba(65,54,126,.025),0 5px 12px rgba(65,54,126,.035),inset 0 1px 0 #fff;
+}
+.vps-cpu-select>span{font-size:9px;font-weight:700;letter-spacing:.25px;color:#716b92}
+.vps-cpu-select select{
+  min-height:32px;
+  border:0;
+  padding:0 3px;
+  outline:none;
+  box-shadow:none;
+  background:transparent;
+  color:#4c456e;
+  font:600 10px 'DM Sans',sans-serif;
+}
+.vps-cpu-select:focus-within{border-color:#aaa0ff;box-shadow:0 0 0 3px rgba(130,115,239,.12),0 6px 14px rgba(65,54,126,.05),inset 0 1px 0 #fff}
+.vps-select-row>select{min-height:35px}
+@media(max-width:760px){
+  .vps-controls{width:100%;align-items:stretch}
+  .vps-filter{justify-content:flex-start}
+  .vps-select-row{justify-content:space-between;width:100%}
+  .vps-cpu-select{flex:1;min-width:0;justify-content:flex-start}
+  .vps-cpu-select select{flex:1;min-width:0}
+  .vps-select-row>select{flex:1;min-width:0}
+}
