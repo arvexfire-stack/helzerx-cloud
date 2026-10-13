@@ -14,6 +14,10 @@ This repository contains the API foundation, PostgreSQL schema, customer authent
     npm run check
     npm test
 
+Run the separate Proxmox lifecycle worker only after configuring the private Proxmox API and PostgreSQL:
+
+    npm run worker
+
 ## Database
 1. Create a dedicated PostgreSQL database and least-privilege application user.
 2. Set DATABASE_URL in the private .env file.
@@ -36,7 +40,7 @@ The initial schema covers customers/sessions, verification tokens, plans, orders
 Session tokens are stored hashed in PostgreSQL. Browser mutations use a CSRF token. Authentication routes require PostgreSQL. Registration remains disabled until SMTP is configured.
 
 ## Important implementation status
-Service power requests currently create database jobs only. There is no worker consuming those jobs yet, so do not tell customers that start/stop/restart has actually happened. New orders, payment verification/callbacks, plan seeding, automated LXC provisioning, recurring invoices/reminders, and production frontend integration remain incomplete. Do not expose the service as a production hosting panel until these are implemented and tested.
+Service power requests are queued for the separate worker (`npm run worker`). The worker processes start/stop/restart jobs only, verifies the related order is active and the service is mapped to an enabled node, waits for the Proxmox task to finish, and records the resulting status. It must be run as a separate restricted process. It does not provision new containers yet. New orders, payment verification/callbacks, plan seeding, automated LXC provisioning, recurring invoices/reminders, and production frontend integration remain incomplete. Do not expose the service as a production hosting panel until these are implemented and tested.
 
 ## Proxmox LXC adapter
 The src/proxmox-client.js module supports allowlisted CT creation, status lookup, and start/stop/restart requests. It requires HTTPS, a dedicated privilege-separated API token, and explicit allowlists for nodes, templates, storage, and bridge. Containers are created as unprivileged.
