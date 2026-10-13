@@ -46,7 +46,7 @@ export function createProxmoxClient() {
 
   return {
     async createContainer({ node, vmid, hostname, cores, memoryMb, swapMb, diskGb, template, storage, bridge, password }) {
-      node = safeSegment(node, 'node'); template = safeSegment(template, 'template');
+      node = safeSegment(node, 'node'); if (typeof template !== 'string' || template.length > 200 || template.includes('..') || template.startsWith('/')) throw new Error('Invalid template');
       storage = safeSegment(storage, 'storage'); bridge = safeSegment(bridge, 'bridge');
       if (!allowedNodes.includes(node) || !allowedTemplates.includes(template) || !allowedStorage.includes(storage) || !allowedBridges.includes(bridge)) {
         throw new Error('Requested Proxmox resource is not in the administrator allowlist');
@@ -60,7 +60,7 @@ export function createProxmoxClient() {
       if (typeof password !== 'string' || password.length < 16 || password.length > 128) throw new Error('A generated container password is required');
       const result = await request('POST', '/nodes/' + encodeURIComponent(node) + '/lxc', {
         vmid: String(vmid), hostname, ostemplate: template, storage,
-        rootfs: storage + ':' + String(diskGb), cores: String(cores), memory: String(memoryMb), swap: String(swapMb),
+        rootfs: storage + ':size=' + String(diskGb), cores: String(cores), memory: String(memoryMb), swap: String(swapMb),
         net0: 'name=eth0,bridge=' + bridge + ',ip=dhcp', password,
         unprivileged: '1', onboot: '1', start: '0', protection: '1'
       });
