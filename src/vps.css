@@ -109,3 +109,125 @@
 @media(max-width:680px){.vps-hero{min-height:740px;align-items:flex-start;padding:65px 7% 95px}.vps-hero-copy{width:100%;max-width:none}.vps-hero h1{font-size:clamp(39px,10vw,55px);letter-spacing:-2.8px;margin-top:24px}.vps-hero h1 em{letter-spacing:-2px}.vps-hero-copy>p{max-width:420px}.vps-hero-visual{top:auto;bottom:30px;right:0;width:100%;height:290px;transform:none;opacity:.85}.vps-server-stack{transform:translate(-50%,-50%) scale(.75) rotateY(-23deg) rotateX(8deg)}.vps-orbit{width:260px;height:120px}.orbit-two{width:220px;height:270px}.vps-float-chip{padding:9px 11px}.chip-ram{top:15%;left:4%}.chip-kvm{right:3%;bottom:13%}.vps-visual-caption{bottom:0}.vps-proofline{margin-top:25px;gap:10px 13px}.vps-intro,.vps-plans-section,.vps-locations,.vps-trust,.vps-faq{padding:85px 6% 70px}.vps-intro-head,.vps-location-heading{flex-direction:column;align-items:flex-start;gap:18px}.vps-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:30px}.vps-metrics>div{min-height:110px;padding:17px}.vps-plans-heading{gap:22px}.vps-controls{width:100%}.vps-filter{justify-content:flex-start;max-width:100%;overflow-x:auto}.vps-filter button{padding:9px 10px}.vps-plan-grid{grid-template-columns:1fr;gap:13px}.vps-plan-card{padding:23px 20px 18px}.vps-price strong{font-size:38px}.vps-specs>div{padding:12px 10px}.vps-specs b{font-size:10px}.vps-infrastructure{grid-template-columns:1fr;padding:70px 7%;gap:24px}.vps-infra-art{height:270px;order:2}.vps-infra-copy{order:1}.vps-infra-list{gap:13px 10px}.vps-location-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.vps-location-card{min-height:115px;padding:16px}.vps-trust-grid{grid-template-columns:1fr;gap:12px}.vps-trust-card{padding:24px 21px}.vps-trust-card>p{min-height:0}.vps-faq-layout{grid-template-columns:1fr;gap:32px}.vps-faq-row>button{grid-template-columns:25px 1fr 18px;gap:8px}.vps-faq-row>button>b{font-size:10px}.vps-faq-row>p{padding-left:33px}.vps-closing{padding:80px 7% 85px}.vps-shell .nav-wrap{width:calc(100% - 32px)}.vps-shell .nav-links{gap:17px}.vps-shell .nav-right{gap:10px}.vps-shell .nav-external{display:none}}
 @media(max-width:430px){.vps-shell .nav-links{display:none}.vps-shell .nav-links.nav-links-open{position:absolute;display:flex;top:71px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;padding:10px 20px 16px;background:rgba(250,250,253,.97);backdrop-filter:blur(18px);border-bottom:1px solid #ebe9f5}.vps-shell .nav-links a{padding:13px 4px}.vps-shell .nav-right{margin-left:auto}.vps-shell .nav-cta{padding:10px 12px}.vps-shell .mobile-menu{display:block}.vps-hero h1{font-size:39px}.vps-hero-actions{gap:15px;flex-wrap:wrap}.vps-hero-actions .primary-action{padding:12px}.vps-proofline{font-size:8px}.vps-filter{width:100%}.vps-filter button{font-size:8px}.vps-location-card>b{font-size:11px}.vps-infra-list{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.vps-reveal{opacity:1;transform:none;transition:none}.vps-server-stack,.vps-float-chip,.infra-core{animation:none}.vps-plan-card{transition:none}}
+
+
+/* Premium 3D glass treatment for VPS plan cards */
+.vps-plans-section{
+  background:
+    radial-gradient(ellipse at 12% 18%,rgba(181,171,255,.13),transparent 34%),
+    radial-gradient(ellipse at 92% 68%,rgba(156,218,255,.14),transparent 36%),
+    linear-gradient(180deg,#fbfbfe 0%,#f7f7fd 100%);
+}
+.vps-plan-grid{perspective:1500px;perspective-origin:50% 30%}
+.vps-plan-card{
+  isolation:isolate;
+  transform-style:preserve-3d;
+  border-color:rgba(255,255,255,.98);
+  background:
+    radial-gradient(ellipse at 8% 0%,rgba(255,255,255,.98),transparent 48%),
+    linear-gradient(145deg,rgba(255,255,255,.96) 0%,rgba(249,248,255,.9) 48%,rgba(235,240,255,.82) 100%);
+  box-shadow:
+    0 2px 3px rgba(47,39,100,.025),
+    0 9px 18px rgba(69,59,128,.045),
+    0 22px 44px rgba(69,59,128,.055),
+    inset 0 1px 0 rgba(255,255,255,1),
+    inset 0 -1px 0 rgba(133,124,198,.1);
+  transition:transform .5s cubic-bezier(.2,.75,.25,1),box-shadow .5s,border-color .35s,background .4s;
+}
+.vps-plan-card:before{
+  z-index:0;
+  opacity:.88;
+  background:
+    radial-gradient(260px circle at var(--shine-x,12%) var(--shine-y,0%),rgba(255,255,255,.98),transparent 58%),
+    linear-gradient(135deg,rgba(189,178,255,.13),transparent 40%,rgba(150,222,255,.16));
+}
+.vps-plan-card:after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  pointer-events:none;
+  border-radius:inherit;
+  background:linear-gradient(112deg,transparent 0%,rgba(255,255,255,.38) 18%,transparent 34%);
+  transform:translateX(-125%);
+  transition:transform .9s cubic-bezier(.2,.65,.25,1);
+}
+.vps-plan-card:hover{
+  transform:translateY(-8px) rotateX(1.4deg) rotateY(-1deg);
+  border-color:rgba(158,146,255,.58);
+  box-shadow:
+    0 5px 10px rgba(47,39,100,.035),
+    0 18px 32px rgba(69,59,128,.09),
+    0 34px 62px rgba(69,59,128,.12),
+    inset 0 1px 0 #fff,
+    inset 0 -1px 0 rgba(133,124,198,.14);
+}
+.vps-plan-card:hover:after{transform:translateX(125%)}
+.vps-plan-card.vps-featured{
+  border-color:rgba(147,132,255,.5);
+  background:
+    radial-gradient(ellipse at 5% 0%,rgba(255,255,255,1),transparent 52%),
+    linear-gradient(145deg,#fff 0%,#f7f5ff 53%,#eaf3ff 100%);
+  box-shadow:
+    0 4px 9px rgba(80,66,160,.04),
+    0 16px 34px rgba(102,87,202,.09),
+    0 28px 55px rgba(102,87,202,.055),
+    inset 0 1px 0 #fff;
+}
+.vps-plan-top,.vps-price,.vps-plan-subtitle,.vps-specs,.vps-included-label,.vps-plan-card ul,.vps-buy-button,.vps-billing-note{transform:translateZ(8px)}
+.vps-plan-icon{
+  background:linear-gradient(145deg,#fff 0%,#f5f2ff 58%,#e8edff 100%);
+  box-shadow:0 5px 9px rgba(91,76,169,.09),0 10px 20px rgba(91,76,169,.08),inset 0 1px 0 #fff,inset 0 -1px 0 rgba(120,106,201,.12);
+}
+.vps-specs>div{
+  position:relative;
+  overflow:hidden;
+  border-color:rgba(255,255,255,.98);
+  background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(247,247,255,.8));
+  box-shadow:0 2px 4px rgba(64,54,120,.025),0 6px 12px rgba(64,54,120,.04),inset 0 1px 0 #fff,inset 0 -1px 0 rgba(131,121,190,.08);
+  transition:transform .3s,box-shadow .3s,border-color .3s;
+}
+.vps-specs>div:before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,1),transparent);
+}
+.vps-plan-card:hover .vps-specs>div{
+  transform:translateY(-2px);
+  border-color:rgba(220,216,255,.95);
+  box-shadow:0 5px 10px rgba(64,54,120,.035),0 10px 17px rgba(64,54,120,.055),inset 0 1px 0 #fff;
+}
+.vps-specs svg{filter:drop-shadow(0 1px 1px rgba(107,91,204,.18))}
+.vps-buy-button{
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 3px 0 rgba(101,91,174,.06),inset 0 1px 0 rgba(255,255,255,.98);
+}
+.vps-buy-button.primary{
+  background:linear-gradient(135deg,#8376f5 0%,#7164e3 54%,#6258cf 100%);
+  border-color:rgba(100,86,205,.85);
+  box-shadow:0 4px 0 #574bb8,0 9px 18px rgba(112,100,220,.22),inset 0 1px 0 rgba(255,255,255,.38);
+}
+.vps-buy-button.primary:hover{
+  transform:translateY(-3px);
+  box-shadow:0 6px 0 #574bb8,0 15px 25px rgba(112,100,220,.28),inset 0 1px 0 rgba(255,255,255,.42);
+}
+.vps-buy-button.primary:active{transform:translateY(1px);box-shadow:0 2px 0 #574bb8,0 4px 9px rgba(112,100,220,.18)}
+.vps-popular{
+  background:linear-gradient(135deg,#f4f1ff,#e7e4ff);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 3px 7px rgba(113,98,215,.08);
+}
+@media (hover:hover) and (pointer:fine){
+  .vps-plan-card:hover .vps-price strong{text-shadow:0 2px 16px rgba(113,98,215,.13)}
+}
+@media (max-width:700px){
+  .vps-plan-grid{perspective:1000px;gap:12px}
+  .vps-plan-card{box-shadow:0 3px 6px rgba(47,39,100,.025),0 10px 22px rgba(69,59,128,.055),inset 0 1px 0 #fff}
+  .vps-plan-card:hover{transform:translateY(-3px)}
+  .vps-plan-card:after{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .vps-plan-card,.vps-plan-card:before,.vps-plan-card:after,.vps-specs>div,.vps-buy-button{transition:none!important}
+}
