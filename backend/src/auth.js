@@ -103,7 +103,7 @@ export async function registerAuthRoutes(app) {
     return reply.send({data:{user:{id:user.id,email:user.email,displayName:user.display_name,role:user.role}}});
   });
 
-  app.post('/api/v1/auth/logout', async (req,reply) => {
+  app.post('/api/v1/auth/logout', { preHandler:[requireCustomerSession,requireCsrf] }, async (req,reply) => {
     const c = cookieMap(req.headers.cookie);
     if (c.hx_session) await getPool().query('UPDATE sessions SET revoked_at=NOW() WHERE token_hash=$1 AND revoked_at IS NULL',[hash(c.hx_session)]);
     reply.header('Set-Cookie',clear);
