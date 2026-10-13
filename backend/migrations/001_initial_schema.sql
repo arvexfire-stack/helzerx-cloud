@@ -67,6 +67,20 @@ CREATE TABLE IF NOT EXISTS plans (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+INSERT INTO plans(id,title,ram_gb,cpu_cores,storage_gb,monthly_price_minor,currency,billing_interval,service_type,active)
+VALUES
+ ('HXC-V02','HXC-V02',2,2,30,229,'USD','month','lxc',TRUE),
+ ('HXC-V04','HXC-V04',4,2,60,349,'USD','month','lxc',TRUE),
+ ('HXC-V06','HXC-V06',6,3,90,469,'USD','month','lxc',TRUE),
+ ('HXC-V08','HXC-V08',8,4,120,569,'USD','month','lxc',TRUE),
+ ('HXC-V12','HXC-V12',12,4,160,799,'USD','month','lxc',TRUE),
+ ('HXC-V16','HXC-V16',16,6,220,999,'USD','month','lxc',TRUE),
+ ('HXC-V24','HXC-V24',24,8,320,1349,'USD','month','lxc',TRUE),
+ ('HXC-V32','HXC-V32',32,10,400,1549,'USD','month','lxc',TRUE),
+ ('HXC-V48','HXC-V48',48,12,600,1799,'USD','month','lxc',TRUE),
+ ('HXC-V64','HXC-V64',64,16,800,2199,'USD','month','lxc',TRUE)
+ON CONFLICT (id) DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   public_id TEXT NOT NULL UNIQUE,
